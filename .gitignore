@@ -31,7 +31,11 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+
+# Figma token dumps (may include internal design data)
+design-tokens/
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +43,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# agent
+.cursor/
+.claude/
+AGENTS.md
+coverage/
+
+
+docs/

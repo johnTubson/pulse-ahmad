@@ -1,31 +1,22 @@
-import { StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { View } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { Fab } from '@/components/ui/Fab';
+import { Screen } from '@/components/ui/Screen';
+import { HomeContent } from '@/features/dashboard/components/HomeContent';
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+    <View className="flex-1">
+      <Screen scroll>
+        <HomeContent
+          onProfilePress={() => router.push('/(tabs)/profile')}
+          onLogMood={() => router.push('/(tabs)/log')}
+          onSeeEvidence={() => router.push('/(tabs)/analytics')}
+          onSeeAll={() => router.push('/(tabs)/analytics')}
+        />
+      </Screen>
+      <Fab onPress={() => router.push('/(tabs)/log')} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
