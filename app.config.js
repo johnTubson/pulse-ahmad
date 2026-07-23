@@ -1,6 +1,5 @@
-import type { ExpoConfig } from 'expo/config';
-
-const config: ExpoConfig = {
+/** @type {import('expo/config').ExpoConfig} */
+const config = {
   name: 'Pulse',
   slug: 'pulse',
   version: '1.0.0',
@@ -10,11 +9,13 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   ios: {
     supportsTablet: true,
+    bundleIdentifier: 'com.johntubson.pulse',
     infoPlist: {
       NSMotionUsageDescription: 'Pulse uses motion sensors for shake-to-log quick expense entry.',
     },
   },
   android: {
+    package: 'com.johntubson.pulse',
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/images/android-icon-foreground.png',
@@ -70,9 +71,9 @@ const config: ExpoConfig = {
     ocrApiKey: process.env.EXPO_PUBLIC_OCR_API_KEY ?? '',
     useMockData: process.env.EXPO_PUBLIC_USE_MOCK_DATA === 'true',
     eas: {
-      projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? '',
+      projectId: 'c2b6d532-7866-427b-a823-0d0b808acb94',
     },
   },
 };
 
-export default config;
+module.exports = config;
