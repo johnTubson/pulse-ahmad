@@ -13,12 +13,12 @@ import { getHomeInsight, getInsightProgress } from '@/features/dashboard/lib/hom
 import { getTodayVsUsual } from '@/features/dashboard/lib/todaySummary';
 import { ExpenseRow } from '@/features/expenses/components/ExpenseRow';
 import { dayKey } from '@/lib/analytics/aggregation';
+import { moodByExpenseMap, withMoods } from '@/lib/analytics/moodJoin';
 import { calculateStreak, getStreakStatus } from '@/lib/analytics/streaks';
 import { useAuthStore } from '@/stores/authStore';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
 import { useOfflineQueue } from '@/stores/offlineQueue';
-import type { ExpenseWithMood, MoodValue } from '@/types/finance';
 
 const STREAK_COPY: Record<ReturnType<typeof getStreakStatus>, string> = {
   active: 'You have shown up {n} days in a row',
@@ -49,15 +49,8 @@ export function HomeContent({
   const pending = useOfflineQueue((s) => s.queue.length);
   const isOnline = useOfflineQueue((s) => s.isOnline);
 
-  const moodByExpense = new Map<string, MoodValue>();
-  for (const mood of moods) {
-    if (mood.expenseId) moodByExpense.set(mood.expenseId, mood.value);
-  }
-
-  const expensesWithMood: ExpenseWithMood[] = expenses.map((e) => ({
-    ...e,
-    mood: moodByExpense.get(e.id) ?? null,
-  }));
+  const moodByExpense = moodByExpenseMap(moods);
+  const expensesWithMood = withMoods(expenses, moodByExpense);
 
   const now = new Date();
   const todayKey = dayKey(now.toISOString());

@@ -1,4 +1,4 @@
-import { dayKey } from '@/lib/analytics/aggregation';
+import { dayKey, hourFromIso } from '@/lib/analytics/aggregation';
 import {
   averageSpendByMoodBand,
   pearson,
@@ -89,14 +89,28 @@ function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
-function mean(values: number[]): number {
-  return values.length === 0 ? 0 : values.reduce((sum, v) => sum + v, 0) / values.length;
+/**
+ * Cheap unlock progress for the personality teaser card — distinct spend days
+ * only, no correlation/classification work.
+ */
+export function personalityUnlockProgress(expenses: { date: string }[]): {
+  progress: number;
+  daysRemaining: number;
+} {
+  const days = new Set<string>();
+  for (const expense of expenses) {
+    days.add(dayKey(expense.date));
+    if (days.size >= MIN_DAYS_FOR_PERSONALITY) break;
+  }
+  const daysOfData = days.size;
+  return {
+    progress: daysOfData / MIN_DAYS_FOR_PERSONALITY,
+    daysRemaining: Math.max(0, MIN_DAYS_FOR_PERSONALITY - daysOfData),
+  };
 }
 
-/** Wall-clock hour from an ISO timestamp, or -1 when unavailable. */
-function hourOf(iso: string): number {
-  const hour = Number(iso.slice(11, 13));
-  return Number.isNaN(hour) ? -1 : hour;
+function mean(values: number[]): number {
+  return values.length === 0 ? 0 : values.reduce((sum, v) => sum + v, 0) / values.length;
 }
 
 function isWeekend(iso: string): boolean {
@@ -127,7 +141,7 @@ function extractFeatures(expenses: ExpenseWithMood[]): Features {
     const key = dayKey(expense.date);
     dailySpend.set(key, (dailySpend.get(key) ?? 0) + expense.amount);
     totalAmount += expense.amount;
-    if (hourOf(expense.date) >= LATE_NIGHT_HOUR) {
+    if (hourFromIso(expense.date) >= LATE_NIGHT_HOUR) {
       lateNightAmount += expense.amount;
     }
     if (isWeekend(expense.date)) {

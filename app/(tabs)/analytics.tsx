@@ -1,60 +1,101 @@
-import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { lazy, Suspense, useState } from 'react';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Card } from '@/components/ui/Card';
-import { Screen } from '@/components/ui/Screen';
-import { categoryColors, categoryLabels } from '@/constants/theme';
-import { aggregateByCategory } from '@/lib/analytics/aggregation';
-import { formatMoney } from '@/lib/currency/formatMoney';
+import { Fab } from '@/components/ui/Fab';
+import { PeriodChipRow } from '@/components/ui/PeriodChipRow';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
+import { AnalyticsHeader } from '@/features/analytics/components/AnalyticsHeader';
+import { ChartsSegmentFallback } from '@/features/analytics/components/ChartsSegmentFallback';
+import { ListSegmentFallback } from '@/features/analytics/components/ListSegmentFallback';
+import { moodByExpenseMap } from '@/lib/analytics/moodJoin';
+import { resolvePeriodRange, type AnalyticsPeriod } from '@/lib/analytics/period';
 import { useExpenseStore } from '@/stores/expenseStore';
+import { useMoodStore } from '@/stores/moodStore';
+import type { CategoryId } from '@/types/finance';
+
+type AnalyticsSegment = 'list' | 'charts';
+
+const SEGMENTS: { id: AnalyticsSegment; label: string }[] = [
+  { id: 'list', label: 'List' },
+  { id: 'charts', label: 'Charts' },
+];
+
+/**
+ * List + charts stay behind async boundaries so the tab's sync require only
+ * pulls chrome (header / chips / FAB). On native, first navigation is a
+ * synchronous require — keep that graph tiny.
+ */
+const AnalyticsListSegment = lazy(() =>
+  import('@/features/analytics/components/AnalyticsListSegment').then((mod) => ({
+    default: mod.AnalyticsListSegment,
+  })),
+);
+
+const AnalyticsChartsSegment = lazy(() =>
+  import('@/features/analytics/components/AnalyticsChartsSegment').then((mod) => ({
+    default: mod.AnalyticsChartsSegment,
+  })),
+);
 
 export default function AnalyticsScreen() {
+  const insets = useSafeAreaInsets();
   const expenses = useExpenseStore((s) => s.expenses);
-  const byCategory = aggregateByCategory(expenses);
+  const moods = useMoodStore((s) => s.moods);
+  const [segment, setSegment] = useState<AnalyticsSegment>('list');
+  const [period, setPeriod] = useState<AnalyticsPeriod>('month');
+
+  const range = resolvePeriodRange(period);
+  const moodByExpense = moodByExpenseMap(moods);
+
+  const onPressCategory = (categoryId: CategoryId) => {
+    router.push(`/analytics/${categoryId}`);
+  };
 
   return (
-    <Screen scroll>
-      <Text className="mt-2 text-2xl font-bold text-text">Analytics</Text>
-      <Text className="mb-5 mt-1 text-sm text-text-muted">
-        Mood and spending charts arrive with the design system. Here is the live category breakdown.
-      </Text>
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <View className="px-5 pb-2">
+        <AnalyticsHeader
+          rangeLabel={range.label}
+          onProfilePress={() => router.push('/(tabs)/profile')}
+        />
 
-      {byCategory.length === 0 ? (
-        <Card className="items-center py-10">
-          <Text className="text-4xl">📊</Text>
-          <Text className="mt-3 text-base font-semibold text-text">Nothing to analyse yet</Text>
-          <Text className="mt-1 text-center text-sm text-text-muted">
-            Log a few expenses to see where your money goes.
-          </Text>
-        </Card>
-      ) : (
-        byCategory.map((row) => (
-          <Card key={row.categoryId} className="mb-2.5">
-            <View className="mb-2 flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <View
-                  className="h-3 w-3 rounded-full"
-                  style={{
-                    backgroundColor: categoryColors[row.categoryId] ?? categoryColors.other,
-                  }}
-                />
-                <Text className="text-base font-semibold text-text">
-                  {categoryLabels[row.categoryId] ?? 'Other'}
-                </Text>
-              </View>
-              <Text className="text-sm font-semibold text-text">{formatMoney(row.total)}</Text>
-            </View>
-            <View className="h-2 overflow-hidden rounded bg-border">
-              <View
-                className="h-full rounded"
-                style={{
-                  width: `${row.percentage}%`,
-                  backgroundColor: categoryColors[row.categoryId] ?? categoryColors.other,
-                }}
-              />
-            </View>
-          </Card>
-        ))
-      )}
-    </Screen>
+        <SegmentedControl
+          options={SEGMENTS}
+          value={segment}
+          onChange={setSegment}
+          className="mb-3"
+        />
+
+        <PeriodChipRow value={period} onChange={setPeriod} className="mb-2" />
+      </View>
+
+      <View className="min-h-0 flex-1 px-5">
+        {segment === 'list' ? (
+          <Suspense fallback={<ListSegmentFallback />}>
+            <AnalyticsListSegment
+              expenses={expenses}
+              moodByExpense={moodByExpense}
+              period={period}
+              range={range}
+            />
+          </Suspense>
+        ) : (
+          <Suspense fallback={<ChartsSegmentFallback loadingLabel />}>
+            <AnalyticsChartsSegment
+              expenses={expenses}
+              moods={moods}
+              moodByExpense={moodByExpense}
+              period={period}
+              range={range}
+              onPressCategory={onPressCategory}
+            />
+          </Suspense>
+        )}
+      </View>
+
+      <Fab onPress={() => router.push('/(tabs)/log')} />
+    </View>
   );
 }

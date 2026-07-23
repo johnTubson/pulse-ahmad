@@ -40,6 +40,12 @@ export function dayKey(iso: string): string {
   return iso.slice(0, 10);
 }
 
+/** Wall-clock hour from an ISO timestamp, or -1 when unavailable. */
+export function hourFromIso(iso: string): number {
+  const hour = Number(iso.slice(11, 13));
+  return Number.isNaN(hour) ? -1 : hour;
+}
+
 /**
  * Totals spend per category, sorted high → low, with each category's share of
  * the grand total. Powers the analytics donut / bar breakdown.

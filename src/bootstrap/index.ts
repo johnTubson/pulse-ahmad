@@ -4,6 +4,7 @@ import { startOfflineQueueListener } from '@/stores/offlineQueue';
 
 import { loadMockData } from './loadMockData';
 import { attachSyncOnAuth } from './syncOnAuth';
+import { warmAnalyticsModules } from './warmAnalytics';
 
 let bootstrapped = false;
 
@@ -19,10 +20,12 @@ export function bootstrapApp(): void {
 
   if (env.useMockData) {
     loadMockData();
+    warmAnalyticsModules();
     return;
   }
 
   attachSyncOnAuth();
   void useAuthStore.getState().initialize();
   startOfflineQueueListener();
+  warmAnalyticsModules();
 }
