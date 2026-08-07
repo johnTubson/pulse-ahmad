@@ -37,6 +37,7 @@ type AnalyticsChartsSegmentProps = {
   period: AnalyticsPeriod;
   range: DateRange;
   onPressCategory: (categoryId: CategoryId) => void;
+  onPressPersonality: () => void;
 };
 
 /**
@@ -50,6 +51,7 @@ export function AnalyticsChartsSegment({
   period,
   range,
   onPressCategory,
+  onPressPersonality,
 }: AnalyticsChartsSegmentProps) {
   const [svgReady, setSvgReady] = useState(false);
 
@@ -128,7 +130,11 @@ export function AnalyticsChartsSegment({
         )}
       </View>
 
-      <PersonalityLockedCard progress={progress} daysRemaining={daysRemaining} />
+      <PersonalityLockedCard
+        progress={progress}
+        daysRemaining={daysRemaining}
+        onPress={onPressPersonality}
+      />
     </ScrollView>
   );
 }

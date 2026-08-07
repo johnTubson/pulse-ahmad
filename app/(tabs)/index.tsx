@@ -10,7 +10,7 @@ export default function HomeScreen() {
     <View className="flex-1">
       <Screen scroll>
         <HomeContent
-          onProfilePress={() => router.push('/(tabs)/profile')}
+          onProfilePress={() => router.push('/(tabs)/personality')}
           onLogMood={() => router.push('/(tabs)/log')}
           onSeeEvidence={() => router.push('/(tabs)/analytics')}
           onSeeAll={() => router.push('/(tabs)/analytics')}

@@ -58,7 +58,7 @@ export default function AnalyticsScreen() {
       <View className="px-5 pb-2">
         <AnalyticsHeader
           rangeLabel={range.label}
-          onProfilePress={() => router.push('/(tabs)/profile')}
+          onProfilePress={() => router.push('/(tabs)/personality')}
         />
 
         <SegmentedControl
@@ -90,6 +90,7 @@ export default function AnalyticsScreen() {
               period={period}
               range={range}
               onPressCategory={onPressCategory}
+              onPressPersonality={() => router.push('/(tabs)/personality')}
             />
           </Suspense>
         )}

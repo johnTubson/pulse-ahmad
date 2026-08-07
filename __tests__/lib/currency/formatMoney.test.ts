@@ -1,4 +1,9 @@
+import { setCurrencyPreference } from '@/lib/currency/currencyPreference';
 import { formatCompactMoney, formatMoney } from '@/lib/currency/formatMoney';
+
+beforeEach(() => {
+  setCurrencyPreference('USD');
+});
 
 describe('formatMoney', () => {
   it('formats positive amounts as USD', () => {
@@ -11,6 +16,11 @@ describe('formatMoney', () => {
 
   it('formats zero', () => {
     expect(formatMoney(0)).toBe('$0.00');
+  });
+
+  it('respects selected currency', () => {
+    setCurrencyPreference('NGN');
+    expect(formatMoney(1000)).toContain('1,000');
   });
 });
 

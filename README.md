@@ -31,9 +31,18 @@ cp .env.example .env
 | ------------------------------- | ---------------------------------------------------- |
 | `EXPO_PUBLIC_SUPABASE_URL`      | Supabase project URL                                 |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (public) key                           |
-| `EXPO_PUBLIC_OCR_API_KEY`       | OCR API key (Phase 5; placeholder OK for now)        |
-| `EXPO_PUBLIC_EAS_PROJECT_ID`    | From `eas init` / expo.dev (optional until building) |
-| `EXPO_PUBLIC_USE_MOCK_DATA`     | `true` = skip Supabase, seed ~60 days of demo data   |
+| `EXPO_PUBLIC_OCR_API_KEY`       | Google Cloud Vision API key (restrict to Vision API) |
+
+### Google Cloud Vision (receipt OCR)
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), enable **Cloud Vision API**.
+2. Create an **API key**, restrict it to Vision API (and optionally your app’s bundle IDs).
+3. Set `EXPO_PUBLIC_OCR_API_KEY` in `.env`, then restart Expo with `--clear`.
+
+Scan flow: Log → **Scan** → camera or library → Vision `DOCUMENT_TEXT_DETECTION` → amount pre-fill (always editable). On failure the receipt still attaches for manual entry.
+
+| `EXPO_PUBLIC_EAS_PROJECT_ID` | From `eas init` / expo.dev (optional until building) |
+| `EXPO_PUBLIC_USE_MOCK_DATA` | `true` = skip Supabase, seed ~60 days of demo data |
 
 ### Mock data (no Supabase)
 

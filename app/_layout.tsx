@@ -70,6 +70,14 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="analytics" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="scan"
+          options={{
+            headerShown: false,
+            presentation: 'fullScreenModal',
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );
