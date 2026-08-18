@@ -33,9 +33,14 @@ export function useScanner() {
   const [permission, requestPermission] = useCameraPermissions();
   const [state, dispatch] = useReducer(scannerReducer, initialUri, createInitialScannerState);
 
-  const finishWithResult = (imageUri: string, amount: number | null) => {
+  const finishWithResult = (
+    imageUri: string,
+    amount: number | null,
+    note?: string | null,
+    date?: Date | null,
+  ) => {
     startedOcrForUri = null;
-    applyScan({ receiptUri: imageUri, amount });
+    applyScan({ receiptUri: imageUri, amount, note, date });
     void Haptics.notificationAsync(
       amount != null
         ? Haptics.NotificationFeedbackType.Success
@@ -59,7 +64,7 @@ export function useScanner() {
         step: result.amount != null ? 3 : 2,
       });
       await sleep(500);
-      finishWithResult(result.imageUri, result.amount);
+      finishWithResult(result.imageUri, result.amount, result.merchant, result.date);
     } catch (error) {
       // Defer applyScan until the user chooses "Enter amount manually" so
       // abandoning / retrying does not lock the log form in a failed scan state.

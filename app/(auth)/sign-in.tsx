@@ -9,6 +9,7 @@ import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { type SignInValues, signInSchema } from '@/schemas/auth';
 import { useAuthStore } from '@/stores/authStore';
+import { useUiStore } from '@/stores/uiStore';
 
 export default function SignInScreen() {
   const signIn = useAuthStore((s) => s.signIn);
@@ -26,6 +27,7 @@ export default function SignInScreen() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       await signIn(values.email.trim(), values.password);
+      useUiStore.getState().completeOnboarding();
     } catch {
       // error surfaced via store
     }

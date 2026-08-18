@@ -1,6 +1,7 @@
 import { ActivityIndicator, Text, View } from 'react-native';
 
 import { ToastBanner } from '@/components/ui/ToastBanner';
+import { BudgetProgressCard } from '@/features/dashboard/components/BudgetProgressCard';
 import { EmptyExpensesCard } from '@/features/dashboard/components/EmptyExpensesCard';
 import { GreetingHeader } from '@/features/dashboard/components/GreetingHeader';
 import { HomeInsightCard } from '@/features/dashboard/components/HomeInsightCard';
@@ -14,11 +15,14 @@ import { getTodayVsUsual } from '@/features/dashboard/lib/todaySummary';
 import { ExpenseRow } from '@/features/expenses/components/ExpenseRow';
 import { dayKey } from '@/lib/analytics/aggregation';
 import { moodByExpenseMap, withMoods } from '@/lib/analytics/moodJoin';
+import { filterExpensesByRange, resolvePeriodRange, sumExpenses } from '@/lib/analytics/period';
 import { calculateStreak, getStreakStatus } from '@/lib/analytics/streaks';
+import { calculateBudgetProgress, getBudgetAlert } from '@/lib/budget/calculator';
 import { useAuthStore } from '@/stores/authStore';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
 import { useOfflineQueue } from '@/stores/offlineQueue';
+import { useUiStore } from '@/stores/uiStore';
 
 const STREAK_COPY: Record<ReturnType<typeof getStreakStatus>, string> = {
   active: 'You have shown up {n} days in a row',
@@ -34,6 +38,7 @@ type HomeContentProps = {
   onLogMood: () => void;
   onSeeEvidence: () => void;
   onSeeAll: () => void;
+  onExpensePress: (expenseId: string) => void;
 };
 
 export function HomeContent({
@@ -41,8 +46,12 @@ export function HomeContent({
   onLogMood,
   onSeeEvidence,
   onSeeAll,
+  onExpensePress,
 }: HomeContentProps) {
   const email = useAuthStore((s) => s.email);
+  const displayName = useUiStore((s) => s.displayName);
+  const monthlyBudget = useUiStore((s) => s.monthlyBudget);
+  const budgetAlertsEnabled = useUiStore((s) => s.budgetAlertsEnabled);
   const expenses = useExpenseStore((s) => s.expenses);
   const isLoading = useExpenseStore((s) => s.isLoading);
   const moods = useMoodStore((s) => s.moods);
@@ -70,10 +79,18 @@ export function HomeContent({
   const recent = expenses.slice(0, RECENT_LIMIT);
   const isEmpty = expenses.length === 0;
 
-  const name = firstNameFrom(email);
+  const name = displayName?.trim() || firstNameFrom(email);
   const greeting = greetingForHour(now.getHours());
 
   const streakSubtitle = STREAK_COPY[streakStatus].replace('{n}', String(streak.current));
+
+  const monthRange = resolvePeriodRange('month', now);
+  const monthSpent = sumExpenses(filterExpensesByRange(expenses, monthRange));
+  const budgetProgress =
+    monthlyBudget != null && monthlyBudget > 0
+      ? calculateBudgetProgress(monthSpent, monthlyBudget)
+      : null;
+  const budgetAlert = budgetProgress && budgetAlertsEnabled ? getBudgetAlert(budgetProgress) : null;
 
   return (
     <>
@@ -98,6 +115,10 @@ export function HomeContent({
         mood={isEmpty ? null : todayMood}
         onLogMood={onLogMood}
       />
+
+      {budgetProgress ? (
+        <BudgetProgressCard className="mb-4" progress={budgetProgress} alertMessage={budgetAlert} />
+      ) : null}
 
       {!isEmpty ? (
         <StreakCard className="mb-4" current={streak.current} subtitle={streakSubtitle} />
@@ -131,6 +152,7 @@ export function HomeContent({
               expense={expense}
               mood={moodByExpense.get(expense.id) ?? null}
               showDivider={index < recent.length - 1}
+              onPress={() => onExpensePress(expense.id)}
             />
           ))}
         </View>

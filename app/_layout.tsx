@@ -1,6 +1,12 @@
 import 'react-native-get-random-values';
 import '../global.css';
 
+import {
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+} from '@expo-google-fonts/manrope';
 import { useFonts } from 'expo-font';
 import { Redirect, Stack, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -9,7 +15,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { bootstrapApp } from '@/bootstrap';
+import { QuickLogOverlay } from '@/features/log/components/QuickLogOverlay';
 import { useAuthStore } from '@/stores/authStore';
+import { useUiStore } from '@/stores/uiStore';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -35,6 +43,7 @@ function SplashHider() {
 /** Declarative redirects; Stack stays mounted as a sibling to avoid remount flicker. */
 function AuthRedirect() {
   const status = useAuthStore((s) => s.status);
+  const hasCompletedOnboarding = useUiStore((s) => s.hasCompletedOnboarding);
   const segments = useSegments();
 
   const inAuthGroup = segments[0] === '(auth)';
@@ -42,7 +51,12 @@ function AuthRedirect() {
   if (status === 'unauthenticated' && !inAuthGroup) {
     return <Redirect href="/(auth)" />;
   }
-  if (status === 'authenticated' && inAuthGroup) {
+
+  if (status === 'authenticated' && !hasCompletedOnboarding && !inAuthGroup) {
+    return <Redirect href="/(auth)/how-it-works" />;
+  }
+
+  if (status === 'authenticated' && hasCompletedOnboarding && inAuthGroup) {
     return <Redirect href="/(tabs)" />;
   }
 
@@ -52,6 +66,11 @@ function AuthRedirect() {
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Manrope: Manrope_400Regular,
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
   });
 
   const status = useAuthStore((state) => state.status);
@@ -70,6 +89,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="analytics" options={{ headerShown: false }} />
+        <Stack.Screen name="expense/[id]" options={{ headerShown: false }} />
         <Stack.Screen
           name="scan"
           options={{
@@ -79,6 +99,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+      <QuickLogOverlay />
     </GestureHandlerRootView>
   );
 }

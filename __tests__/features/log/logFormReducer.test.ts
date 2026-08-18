@@ -37,6 +37,55 @@ describe('logFormReducer', () => {
     expect(next.appliedScanToken).toBe(1);
   });
 
+  it('prefills note from merchant when note is empty', () => {
+    const next = logFormReducer(initialLogFormState, {
+      type: 'APPLY_SCAN',
+      token: 4,
+      amount: 4,
+      note: 'Coffee Shop',
+    });
+    expect(next.note).toBe('Coffee Shop');
+  });
+
+  it('prefills occurredAt from scan date', () => {
+    const when = new Date(2024, 2, 15, 12, 0, 0);
+    const next = logFormReducer(initialLogFormState, {
+      type: 'APPLY_SCAN',
+      token: 6,
+      amount: 8,
+      occurredAt: when,
+    });
+    expect(next.occurredAt).toEqual(when);
+  });
+
+  it('keeps occurredAt when scan has no date', () => {
+    const seeded = logFormReducer(initialLogFormState, {
+      type: 'SET_OCCURRED_AT',
+      occurredAt: new Date(2023, 0, 1),
+    });
+    const next = logFormReducer(seeded, {
+      type: 'APPLY_SCAN',
+      token: 7,
+      amount: 1,
+      occurredAt: null,
+    });
+    expect(next.occurredAt).toEqual(seeded.occurredAt);
+  });
+
+  it('does not overwrite an existing note with merchant', () => {
+    const seeded = logFormReducer(initialLogFormState, {
+      type: 'SET_NOTE',
+      note: 'Already typed',
+    });
+    const next = logFormReducer(seeded, {
+      type: 'APPLY_SCAN',
+      token: 5,
+      amount: 4,
+      note: 'Coffee Shop',
+    });
+    expect(next.note).toBe('Already typed');
+  });
+
   it('opens mood sheet after a successful save', () => {
     const next = logFormReducer(
       { ...initialLogFormState, saving: true },

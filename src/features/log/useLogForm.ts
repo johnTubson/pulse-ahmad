@@ -47,6 +47,8 @@ export function useLogForm() {
   const ocrStatus = useScanDraftStore((s) => s.ocrStatus);
   const receiptUri = useScanDraftStore((s) => s.receiptUri);
   const suggestedAmount = useScanDraftStore((s) => s.suggestedAmount);
+  const suggestedNote = useScanDraftStore((s) => s.suggestedNote);
+  const suggestedDate = useScanDraftStore((s) => s.suggestedDate);
   const clearReceipt = useScanDraftStore((s) => s.clearReceipt);
   const resetScanDraft = useScanDraftStore((s) => s.reset);
 
@@ -55,7 +57,13 @@ export function useLogForm() {
 
   // Apply each new scan result during render (React-recommended alternative to useEffect).
   if (scanToken !== state.appliedScanToken) {
-    dispatch({ type: 'APPLY_SCAN', token: scanToken, amount: suggestedAmount });
+    dispatch({
+      type: 'APPLY_SCAN',
+      token: scanToken,
+      amount: suggestedAmount,
+      note: suggestedNote,
+      occurredAt: suggestedDate ? new Date(suggestedDate) : null,
+    });
   }
 
   const parsed = parseFloat(state.amount);
@@ -77,7 +85,7 @@ export function useLogForm() {
       try {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         const imageUrl = await resolveImageUrl(userId, receiptUri, () =>
-          showToast('Receipt saved locally — cloud upload will retry later'),
+          showToast('Receipt saved locally. Cloud upload will retry later'),
         );
         const expense = addExpense(userId, {
           amount: parsed,

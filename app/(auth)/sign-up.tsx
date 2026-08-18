@@ -10,6 +10,7 @@ import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { type SignUpValues, signUpSchema } from '@/schemas/auth';
 import { useAuthStore } from '@/stores/authStore';
+import { useUiStore } from '@/stores/uiStore';
 
 export default function SignUpScreen() {
   const signUp = useAuthStore((s) => s.signUp);
@@ -29,6 +30,7 @@ export default function SignUpScreen() {
     setNotice(null);
     try {
       const { needsEmailConfirmation } = await signUp(values.email.trim(), values.password);
+      useUiStore.getState().completeOnboarding();
       if (needsEmailConfirmation) {
         setNotice('Account created. Check your email to confirm, then sign in.');
       }

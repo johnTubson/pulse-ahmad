@@ -1,4 +1,12 @@
 import { env } from '@/constants/env';
+import {
+  EMPTY_OCR_TEXT,
+  OcrError,
+  requireApiKey,
+  textOnlyResult,
+  throwIfHttpFailed,
+  type RecognizeResult,
+} from '@/services/ocr/types';
 
 const VISION_ANNOTATE_URL = 'https://vision.googleapis.com/v1/images:annotate';
 
@@ -10,16 +18,6 @@ export type VisionAnnotateResponse = {
   }[];
   error?: { code?: number; message?: string };
 };
-
-export class OcrError extends Error {
-  constructor(
-    message: string,
-    readonly code: 'missing_key' | 'http' | 'api' | 'empty',
-  ) {
-    super(message);
-    this.name = 'OcrError';
-  }
-}
 
 /** Pulls the full OCR string from a Vision annotate response body. */
 export function extractTextFromVisionResponse(body: VisionAnnotateResponse): string {
@@ -41,21 +39,15 @@ export function extractTextFromVisionResponse(body: VisionAnnotateResponse): str
   const fallback = first.textAnnotations?.[0]?.description?.trim();
   if (fallback) return fallback;
 
-  throw new OcrError('No text found on this receipt.', 'empty');
+  throw new OcrError(EMPTY_OCR_TEXT, 'empty');
 }
 
-/**
- * Runs Google Cloud Vision DOCUMENT_TEXT_DETECTION on a base64 JPEG/PNG.
- * Uses `EXPO_PUBLIC_OCR_API_KEY` (API key restricted to Vision API).
- */
-export async function recognizeText(base64Image: string): Promise<string> {
-  const apiKey = env.ocrApiKey.trim();
-  if (!apiKey) {
-    throw new OcrError(
-      'OCR API key is missing. Set EXPO_PUBLIC_OCR_API_KEY in your .env.',
-      'missing_key',
-    );
-  }
+/** Google Cloud Vision DOCUMENT_TEXT_DETECTION on raw base64 JPEG/PNG. */
+export async function recognizeWithGoogleVision(base64Image: string): Promise<RecognizeResult> {
+  const apiKey = requireApiKey(
+    env.ocrApiKey,
+    'OCR API key is missing. Set EXPO_PUBLIC_OCR_API_KEY in your .env.',
+  );
 
   const response = await fetch(`${VISION_ANNOTATE_URL}?key=${encodeURIComponent(apiKey)}`, {
     method: 'POST',
@@ -70,11 +62,8 @@ export async function recognizeText(base64Image: string): Promise<string> {
     }),
   });
 
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new OcrError(detail || `Vision request failed (${response.status}).`, 'http');
-  }
+  await throwIfHttpFailed(response, 'Vision');
 
   const body = (await response.json()) as VisionAnnotateResponse;
-  return extractTextFromVisionResponse(body);
+  return textOnlyResult(extractTextFromVisionResponse(body));
 }

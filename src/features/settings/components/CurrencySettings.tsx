@@ -1,12 +1,29 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { env } from '@/constants/env';
 import { CURRENCY_OPTIONS } from '@/features/settings/lib/currencies';
 import { formatMoney } from '@/lib/currency/formatMoney';
+import { useAuthStore } from '@/stores/authStore';
+import { useOfflineQueue } from '@/stores/offlineQueue';
 import { useUiStore } from '@/stores/uiStore';
 
 export function CurrencySettings() {
+  const userId = useAuthStore((s) => s.userId);
   const currency = useUiStore((s) => s.currency);
   const setCurrency = useUiStore((s) => s.setCurrency);
+  const enqueue = useOfflineQueue((s) => s.enqueue);
+
+  const onSelect = (code: string) => {
+    setCurrency(code);
+    if (userId && !env.useMockData) {
+      enqueue({
+        entity: 'profile',
+        operation: 'update',
+        targetId: userId,
+        payload: { input: { currency: code } },
+      });
+    }
+  };
 
   return (
     <View className="gap-3">
@@ -23,7 +40,7 @@ export function CurrencySettings() {
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
                 className="flex-row items-center justify-between px-4 py-4 active:bg-grey-100"
-                onPress={() => setCurrency(option.code)}
+                onPress={() => onSelect(option.code)}
               >
                 <Text className="text-base font-medium text-text">{option.label}</Text>
                 {selected ? (

@@ -1,12 +1,15 @@
 import { Text, View } from 'react-native';
 
 import { CategoryTile } from '@/features/log/components/CategoryTile';
+import { useUiStore } from '@/stores/uiStore';
 import { CATEGORY_IDS, type CategoryId } from '@/types/finance';
 import { cn } from '@/utils/cn';
 
 type CategoryGridProps = {
   selectedId: CategoryId | null;
   onSelect: (id: CategoryId) => void;
+  /** When true, include categories the user has hidden (edit flows). */
+  includeHidden?: boolean;
   className?: string;
 };
 
@@ -18,8 +21,18 @@ function chunkCategories(ids: CategoryId[], size: number): CategoryId[][] {
   return rows;
 }
 
-export function CategoryGrid({ selectedId, onSelect, className }: CategoryGridProps) {
-  const rows = chunkCategories(CATEGORY_IDS, 3);
+export function CategoryGrid({
+  selectedId,
+  onSelect,
+  includeHidden = false,
+  className,
+}: CategoryGridProps) {
+  const hiddenCategoryIds = useUiStore((s) => s.hiddenCategoryIds);
+  const visible = includeHidden
+    ? CATEGORY_IDS
+    : CATEGORY_IDS.filter((id) => !hiddenCategoryIds.includes(id));
+  const ids = selectedId && !visible.includes(selectedId) ? [...visible, selectedId] : visible;
+  const rows = chunkCategories(ids, 3);
 
   return (
     <View className={cn('rounded-2xl bg-grey-100 p-3', className)}>
@@ -35,7 +48,6 @@ export function CategoryGrid({ selectedId, onSelect, className }: CategoryGridPr
                 onPress={() => onSelect(id)}
               />
             ))}
-            {/* Pad incomplete final row so tiles keep equal width */}
             {row.length < 3
               ? Array.from({ length: 3 - row.length }).map((_, index) => (
                   <View key={`pad-${index}`} className="flex-1" />

@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { MoneyText } from '@/components/ui/MoneyText';
 import { MOOD_META } from '@/constants/mood';
@@ -11,16 +11,23 @@ type ExpenseRowProps = {
   mood?: MoodValue | null;
   /** Hide bottom divider when this is the last row in a grouped list. */
   showDivider?: boolean;
+  onPress?: () => void;
   className?: string;
 };
 
-export function ExpenseRow({ expense, mood, showDivider = false, className }: ExpenseRowProps) {
+export function ExpenseRow({
+  expense,
+  mood,
+  showDivider = false,
+  onPress,
+  className,
+}: ExpenseRowProps) {
   const colour = categoryColors[expense.categoryId] ?? categoryColors.other;
   const categoryLabel = categoryLabels[expense.categoryId] ?? 'Other';
   const title = expense.note?.trim() || categoryLabel;
 
-  return (
-    <View className={cn('bg-transparent', className)}>
+  const body = (
+    <>
       <View className="flex-row items-center gap-3 px-4 py-3.5">
         <View
           className="h-11 w-11 items-center justify-center rounded-lg"
@@ -49,6 +56,21 @@ export function ExpenseRow({ expense, mood, showDivider = false, className }: Ex
         <MoneyText amount={expense.amount} size="md" className="text-text" />
       </View>
       {showDivider ? <View className="ml-[68px] mr-4 h-px bg-border" /> : null}
-    </View>
+    </>
   );
+
+  if (onPress) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Edit ${title}`}
+        className={cn('bg-transparent active:opacity-80', className)}
+        onPress={onPress}
+      >
+        {body}
+      </Pressable>
+    );
+  }
+
+  return <View className={cn('bg-transparent', className)}>{body}</View>;
 }

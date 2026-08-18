@@ -1,6 +1,6 @@
 import type { FlashMode } from 'expo-camera';
 
-import { OcrError } from '@/services/ocr/client';
+import { OcrError } from '@/services/ocr/types';
 
 export type ProcessingStep = 1 | 2 | 3;
 
@@ -86,12 +86,9 @@ export function firstRouteParam(value: string | string[] | undefined): string | 
 }
 
 export function ocrErrorMessage(error: unknown): string {
-  if (error instanceof OcrError) {
-    if (error.code === 'empty') {
-      return "We couldn't find a total on this receipt. You can enter it manually.";
-    }
-    // api / http / missing_key — hide Vision payloads and config detail
-    return 'Something went wrong while reading this receipt. You can enter the amount manually.';
+  if (error instanceof OcrError && error.code === 'empty') {
+    return "We couldn't find a total on this receipt. You can enter it manually.";
   }
+  // Hide provider payloads and config detail for api / http / missing_key / unknown.
   return 'Something went wrong while reading this receipt. You can enter the amount manually.';
 }

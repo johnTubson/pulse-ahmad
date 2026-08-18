@@ -1,8 +1,8 @@
 import {
   extractTextFromVisionResponse,
-  OcrError,
   type VisionAnnotateResponse,
-} from '@/services/ocr/client';
+} from '@/services/ocr/providers/googleVision';
+import { OcrError } from '@/services/ocr/types';
 
 describe('extractTextFromVisionResponse', () => {
   it('prefers fullTextAnnotation text', () => {

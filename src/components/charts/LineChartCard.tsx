@@ -31,10 +31,12 @@ export function LineChartCard({
 }: LineChartCardProps) {
   const { width, onLayout } = useChartWidth();
   const showRangeEnds = Boolean(rangeStartLabel || rangeEndLabel);
-  // gifted-charts adds `spacing` once per point (including the last) into
-  // totalWidth. Divide by n — not n-1 — so endSpacing stays on-screen.
+  // Last point is at initialSpacing + (n - 1) * spacing. Divide by n - 1 so
+  // that lands on width - endSpacing (right gutter). gifted-charts still adds
+  // one extra spacing into totalWidth after the last point; overflow-hidden
+  // clips that empty tail.
   const spacing =
-    width > 0 && data.length > 0 ? (width - AXIS_GUTTER * 2) / data.length : AXIS_GUTTER;
+    width > 0 && data.length > 1 ? (width - AXIS_GUTTER * 2) / (data.length - 1) : AXIS_GUTTER;
 
   if (data.length === 0) {
     return (

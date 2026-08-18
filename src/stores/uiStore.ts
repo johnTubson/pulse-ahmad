@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { setCurrencyPreference } from '@/lib/currency/currencyPreference';
+import type { CategoryId } from '@/types/finance';
 
 type UiState = {
   hasCompletedOnboarding: boolean;
@@ -17,7 +18,11 @@ type UiState = {
   budgetAlertsEnabled: boolean;
   /** Optional monthly overall budget amount; null = unset. */
   monthlyBudget: number | null;
+  /** Category ids hidden from the log grid (still valid on existing expenses). */
+  hiddenCategoryIds: CategoryId[];
   toast: string | null;
+  /** Transient quick-log overlay opened by shake or settings test. */
+  quickLogOpen: boolean;
   completeOnboarding: () => void;
   setShakeSensitivity: (value: number) => void;
   setShakeToLogEnabled: (enabled: boolean) => void;
@@ -26,8 +31,11 @@ type UiState = {
   setDailyReminderEnabled: (enabled: boolean) => void;
   setBudgetAlertsEnabled: (enabled: boolean) => void;
   setMonthlyBudget: (amount: number | null) => void;
+  toggleHiddenCategory: (id: CategoryId) => void;
   showToast: (message: string) => void;
   dismissToast: () => void;
+  openQuickLog: () => void;
+  closeQuickLog: () => void;
 };
 
 export const useUiStore = create<UiState>()(
@@ -41,7 +49,9 @@ export const useUiStore = create<UiState>()(
       dailyReminderEnabled: false,
       budgetAlertsEnabled: false,
       monthlyBudget: null,
+      hiddenCategoryIds: [],
       toast: null,
+      quickLogOpen: false,
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
       setShakeSensitivity: (value) => set({ shakeSensitivity: value }),
       setShakeToLogEnabled: (enabled) => set({ shakeToLogEnabled: enabled }),
@@ -53,8 +63,16 @@ export const useUiStore = create<UiState>()(
       setDailyReminderEnabled: (enabled) => set({ dailyReminderEnabled: enabled }),
       setBudgetAlertsEnabled: (enabled) => set({ budgetAlertsEnabled: enabled }),
       setMonthlyBudget: (amount) => set({ monthlyBudget: amount }),
+      toggleHiddenCategory: (id) =>
+        set((state) => ({
+          hiddenCategoryIds: state.hiddenCategoryIds.includes(id)
+            ? state.hiddenCategoryIds.filter((c) => c !== id)
+            : [...state.hiddenCategoryIds, id],
+        })),
       showToast: (message) => set({ toast: message }),
       dismissToast: () => set({ toast: null }),
+      openQuickLog: () => set({ quickLogOpen: true }),
+      closeQuickLog: () => set({ quickLogOpen: false }),
     }),
     {
       name: 'pulse-ui',
@@ -68,6 +86,7 @@ export const useUiStore = create<UiState>()(
         dailyReminderEnabled: state.dailyReminderEnabled,
         budgetAlertsEnabled: state.budgetAlertsEnabled,
         monthlyBudget: state.monthlyBudget,
+        hiddenCategoryIds: state.hiddenCategoryIds,
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.currency) setCurrencyPreference(state.currency);

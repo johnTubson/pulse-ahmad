@@ -14,6 +14,7 @@ export default function HomeScreen() {
           onLogMood={() => router.push('/(tabs)/log')}
           onSeeEvidence={() => router.push('/(tabs)/analytics')}
           onSeeAll={() => router.push('/(tabs)/analytics')}
+          onExpensePress={(id) => router.push(`/expense/${id}`)}
         />
       </Screen>
       <Fab onPress={() => router.push('/(tabs)/log')} />

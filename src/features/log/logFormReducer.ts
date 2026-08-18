@@ -17,7 +17,13 @@ export type LogFormAction =
   | { type: 'SET_CATEGORY'; categoryId: CategoryId }
   | { type: 'SET_NOTE'; note: string }
   | { type: 'SET_OCCURRED_AT'; occurredAt: Date }
-  | { type: 'APPLY_SCAN'; token: number; amount: number | null }
+  | {
+      type: 'APPLY_SCAN';
+      token: number;
+      amount: number | null;
+      note?: string | null;
+      occurredAt?: Date | null;
+    }
   | { type: 'OPEN_SCAN_SHEET' }
   | { type: 'CLOSE_SCAN_SHEET' }
   | { type: 'SAVE_START' }
@@ -60,6 +66,12 @@ export function logFormReducer(state: LogFormState, action: LogFormAction): LogF
         ...state,
         appliedScanToken: action.token,
         amount: action.amount != null ? formatAmountValue(action.amount) : state.amount,
+        // suggestedNote is already trimmed in scanDraftStore.applyScan
+        note: action.note && !state.note.trim() ? action.note : state.note,
+        occurredAt:
+          action.occurredAt && !Number.isNaN(action.occurredAt.getTime())
+            ? action.occurredAt
+            : state.occurredAt,
       };
     case 'OPEN_SCAN_SHEET':
       return { ...state, scanVisible: true };

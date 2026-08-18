@@ -4,7 +4,7 @@ import {
   ocrErrorMessage,
   scannerReducer,
 } from '@/features/log/scannerReducer';
-import { OcrError } from '@/services/ocr/client';
+import { OcrError } from '@/services/ocr/types';
 
 describe('createInitialScannerState', () => {
   it('starts in capture with no uri', () => {

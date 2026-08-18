@@ -60,6 +60,7 @@ const config = {
       },
     ],
     'expo-sensors',
+    'expo-notifications',
     '@react-native-community/datetimepicker',
   ],
   experiments: {
@@ -68,7 +69,11 @@ const config = {
   extra: {
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? '',
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
+    ocrProvider: process.env.EXPO_PUBLIC_OCR_PROVIDER ?? 'google',
     ocrApiKey: process.env.EXPO_PUBLIC_OCR_API_KEY ?? '',
+    ocrSpaceApiKey: process.env.EXPO_PUBLIC_OCR_SPACE_API_KEY ?? '',
+    ocrSpaceUrl: process.env.EXPO_PUBLIC_OCR_SPACE_URL ?? '',
+    interfazeApiKey: process.env.EXPO_PUBLIC_INTERFAZE_API_KEY ?? '',
     useMockData: process.env.EXPO_PUBLIC_USE_MOCK_DATA === 'true',
     eas: {
       projectId: 'c2b6d532-7866-427b-a823-0d0b808acb94',

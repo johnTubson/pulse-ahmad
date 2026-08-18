@@ -3,23 +3,31 @@ import { Alert, Pressable, Switch, Text, TextInput, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
+import { env } from '@/constants/env';
 import { palette } from '@/constants/theme';
 import { formatMoney } from '@/lib/currency/formatMoney';
+import { openQuickLogWithHaptic } from '@/services/sensors/shakeToLog';
 import { useAuthStore } from '@/stores/authStore';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
+import { useOfflineQueue } from '@/stores/offlineQueue';
 import { useUiStore } from '@/stores/uiStore';
 
 export function PrivacySettings() {
+  const userId = useAuthStore((s) => s.userId);
   const signOut = useAuthStore((s) => s.signOut);
   const resetExpenses = useExpenseStore((s) => s.reset);
   const resetMoods = useMoodStore((s) => s.reset);
+  const enqueue = useOfflineQueue((s) => s.enqueue);
   const shakeSensitivity = useUiStore((s) => s.shakeSensitivity);
   const shakeToLogEnabled = useUiStore((s) => s.shakeToLogEnabled);
   const monthlyBudget = useUiStore((s) => s.monthlyBudget);
   const setShakeSensitivity = useUiStore((s) => s.setShakeSensitivity);
   const setShakeToLogEnabled = useUiStore((s) => s.setShakeToLogEnabled);
   const setMonthlyBudget = useUiStore((s) => s.setMonthlyBudget);
+  const setDisplayName = useUiStore((s) => s.setDisplayName);
+  const setDailyReminderEnabled = useUiStore((s) => s.setDailyReminderEnabled);
+  const setBudgetAlertsEnabled = useUiStore((s) => s.setBudgetAlertsEnabled);
   const showToast = useUiStore((s) => s.showToast);
 
   const [budgetDraft, setBudgetDraft] = useState(
@@ -39,23 +47,38 @@ export function PrivacySettings() {
       return;
     }
     setMonthlyBudget(amount);
+    if (userId && !env.useMockData) {
+      enqueue({
+        entity: 'budget',
+        operation: 'update',
+        targetId: userId,
+        payload: { userId, input: { categoryId: null, amountLimit: amount } },
+      });
+    }
     showToast(`Budget set to ${formatMoney(amount)}`);
+  };
+
+  const clearLocalAccount = () => {
+    resetExpenses();
+    resetMoods();
+    setDisplayName(null);
+    setMonthlyBudget(null);
+    setDailyReminderEnabled(false);
+    setBudgetAlertsEnabled(false);
+    useOfflineQueue.setState({ queue: [] });
+    void signOut();
   };
 
   const onDeleteAccount = () => {
     Alert.alert(
       'Delete account?',
-      'This signs you out and clears local data. Server-side deletion will follow in a later release.',
+      'This signs you out and clears local data on this device. Server-side account deletion is not available from the app yet.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            resetExpenses();
-            resetMoods();
-            void signOut();
-          },
+          onPress: clearLocalAccount,
         },
       ],
     );
@@ -118,6 +141,10 @@ export function PrivacySettings() {
                 );
               })}
             </View>
+            <Text className="mb-3 text-sm text-text-muted">
+              Opens the quick log overlay so you can feel the flow without shaking.
+            </Text>
+            <SecondaryButton label="Test shake" onPress={openQuickLogWithHaptic} />
           </View>
         </View>
       </View>

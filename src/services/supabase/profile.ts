@@ -19,12 +19,16 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 }
 
 export async function updateProfile(userId: string, input: UpdateProfileInput): Promise<Profile> {
+  const patch: {
+    display_name?: string | null;
+    currency?: string;
+  } = {};
+  if ('displayName' in input) patch.display_name = input.displayName;
+  if (input.currency !== undefined) patch.currency = input.currency;
+
   const { data, error } = await getSupabaseClient()
     .from('profiles')
-    .update({
-      display_name: input.displayName,
-      currency: input.currency,
-    })
+    .update(patch)
     .eq('id', userId)
     .select('*')
     .single();

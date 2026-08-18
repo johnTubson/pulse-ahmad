@@ -12,7 +12,8 @@ export function NotificationsSettings() {
   return (
     <View className="gap-3">
       <Text className="text-sm text-text-muted">
-        Preferences are saved on this device. Push delivery ships later.
+        Daily reminder schedules a local notification at 8:00 pm. Budget alerts appear on Home when
+        you are near or over your monthly limit.
       </Text>
       <View className="overflow-hidden rounded-2xl border border-border bg-surface">
         <View className="flex-row items-center justify-between px-4 py-4">
@@ -32,7 +33,7 @@ export function NotificationsSettings() {
         <View className="flex-row items-center justify-between px-4 py-4">
           <View className="mr-3 flex-1">
             <Text className="text-base font-medium text-text">Budget alerts</Text>
-            <Text className="mt-0.5 text-sm text-text-muted">When you’re approaching a limit</Text>
+            <Text className="mt-0.5 text-sm text-text-muted">When you are approaching a limit</Text>
           </View>
           <Switch
             value={budgetAlertsEnabled}

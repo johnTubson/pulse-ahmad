@@ -79,6 +79,7 @@ export default function AnalyticsScreen() {
               moodByExpense={moodByExpense}
               period={period}
               range={range}
+              onExpensePress={(id) => router.push(`/expense/${id}`)}
             />
           </Suspense>
         ) : (

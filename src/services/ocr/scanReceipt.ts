@@ -1,25 +1,36 @@
 import { parseAmount } from '@/services/ocr/amountParser';
-import { recognizeText } from '@/services/ocr/client';
 import { prepareReceiptImage } from '@/services/ocr/prepareImage';
+import { parseMerchant, parseReceiptDate } from '@/services/ocr/receiptHeuristics';
+import { recognizeReceipt } from '@/services/ocr/recognizeReceipt';
 
 export type ScanReceiptResult = {
-  /** Compressed local image URI to attach / upload. */
   imageUri: string;
-  /** Raw OCR text (for debugging / future merchant parsing). */
   text: string;
-  /** Best-guess total, or null when none found. */
   amount: number | null;
+  merchant: string | null;
+  /** Parsed purchase date when OCR or heuristics find one. */
+  date: Date | null;
 };
 
-/**
- * Full receipt pipeline: compress → Vision OCR → amount heuristic.
- */
+/** Compress → provider OCR → amount / merchant / date (structured or heuristic). */
 export async function scanReceipt(imageUri: string): Promise<ScanReceiptResult> {
   const prepared = await prepareReceiptImage(imageUri);
-  const text = await recognizeText(prepared.base64);
+  const recognized = await recognizeReceipt(prepared.base64);
+  const amount = recognized.amount ?? parseAmount(recognized.text);
+  const merchant = recognized.merchant?.trim() || parseMerchant(recognized.text);
+
+  let date: Date | null = null;
+  if (recognized.date?.trim()) {
+    const parsed = new Date(recognized.date);
+    if (!Number.isNaN(parsed.getTime())) date = parsed;
+  }
+  date ??= parseReceiptDate(recognized.text);
+
   return {
     imageUri: prepared.uri,
-    text,
-    amount: parseAmount(text),
+    text: recognized.text,
+    amount,
+    merchant,
+    date,
   };
 }

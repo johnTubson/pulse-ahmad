@@ -21,6 +21,7 @@ type AnalyticsListSegmentProps = {
   moodByExpense: Map<string, MoodValue>;
   period: AnalyticsPeriod;
   range: DateRange;
+  onExpensePress: (expenseId: string) => void;
 };
 
 export function AnalyticsListSegment({
@@ -28,6 +29,7 @@ export function AnalyticsListSegment({
   moodByExpense,
   period,
   range,
+  onExpensePress,
 }: AnalyticsListSegmentProps) {
   const inRange = filterExpensesByRange(expenses, range);
   const previous = filterExpensesByRange(expenses, previousPeriodRange(range));
@@ -78,6 +80,7 @@ export function AnalyticsListSegment({
               expense={expense}
               mood={moodByExpense.get(expense.id) ?? null}
               showDivider={index < sorted.length - 1}
+              onPress={() => onExpensePress(expense.id)}
             />
           ))}
         </ScrollView>

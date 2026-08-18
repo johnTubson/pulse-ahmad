@@ -138,6 +138,7 @@ export default function CategoryDrillScreen() {
                 expense={expense}
                 mood={moodByExpense.get(expense.id) ?? null}
                 showDivider={index < topExpenses.length - 1}
+                onPress={() => router.push(`/expense/${expense.id}`)}
               />
             ))}
           </View>

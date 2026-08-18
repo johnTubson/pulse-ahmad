@@ -6,11 +6,13 @@ import { AvatarHeader } from '@/components/ui/AvatarHeader';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SettingsGroup } from '@/components/ui/SettingsGroup';
 import { SettingsRow, SignOutRow } from '@/components/ui/SettingsRow';
+import { env } from '@/constants/env';
 import { palette } from '@/constants/theme';
 import { firstNameFrom } from '@/features/dashboard/lib/greeting';
 import { calculateStreak } from '@/lib/analytics/streaks';
 import { useAuthStore } from '@/stores/authStore';
 import { useExpenseStore } from '@/stores/expenseStore';
+import { useOfflineQueue } from '@/stores/offlineQueue';
 import { useUiStore } from '@/stores/uiStore';
 
 type SettingsHubProps = {
@@ -37,10 +39,13 @@ export function SettingsHub({
   onDataExport,
   onPrivacy,
 }: SettingsHubProps) {
+  const userId = useAuthStore((s) => s.userId);
   const email = useAuthStore((s) => s.email);
   const signOut = useAuthStore((s) => s.signOut);
   const displayName = useUiStore((s) => s.displayName);
   const setDisplayName = useUiStore((s) => s.setDisplayName);
+  const showToast = useUiStore((s) => s.showToast);
+  const enqueue = useOfflineQueue((s) => s.enqueue);
   const expenses = useExpenseStore((s) => s.expenses);
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(displayName ?? '');
@@ -51,12 +56,22 @@ export function SettingsHub({
 
   const saveName = () => {
     const next = draftName.trim();
-    setDisplayName(next.length > 0 ? next : null);
+    const value = next.length > 0 ? next : null;
+    setDisplayName(value);
     setEditingName(false);
+    if (userId && !env.useMockData) {
+      enqueue({
+        entity: 'profile',
+        operation: 'update',
+        targetId: userId,
+        payload: { input: { displayName: value } },
+      });
+    }
+    showToast(value ? 'Display name saved' : 'Display name cleared');
   };
 
   const onSignOut = () => {
-    Alert.alert('Sign out', 'You’ll need to sign in again to sync your data.', [
+    Alert.alert('Sign out', "You'll need to sign in again to sync your data.", [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign out',
