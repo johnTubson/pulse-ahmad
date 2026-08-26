@@ -1,15 +1,19 @@
 import { recognizeWithGoogleVision } from '@/services/ocr/providers/googleVision';
 import { recognizeWithInterfaze } from '@/services/ocr/providers/interfaze';
 import { recognizeWithOcrSpace } from '@/services/ocr/providers/ocrSpace';
+import { recognizeWithOpenRouter } from '@/services/ocr/providers/openRouter';
 import { OcrError } from '@/services/ocr/types';
 
 jest.mock('@/constants/env', () => ({
   env: {
-    ocrProvider: 'google',
+    ocrProvider: 'llm',
     ocrApiKey: '',
     ocrSpaceApiKey: '',
     ocrSpaceUrl: '',
     interfazeApiKey: '',
+    openRouterApiKey: '',
+    openRouterModel: '',
+    openRouterFallbackModels: '',
   },
 }));
 
@@ -25,5 +29,9 @@ describe('OCR providers missing keys', () => {
 
   it('interfaze throws missing_key when Interfaze key is empty', async () => {
     await expect(recognizeWithInterfaze('abc')).rejects.toMatchObject({ code: 'missing_key' });
+  });
+
+  it('openrouter throws missing_key when OpenRouter key is empty', async () => {
+    await expect(recognizeWithOpenRouter('abc')).rejects.toMatchObject({ code: 'missing_key' });
   });
 });

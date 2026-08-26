@@ -64,7 +64,7 @@ export function useScanner() {
         step: result.amount != null ? 3 : 2,
       });
       await sleep(500);
-      finishWithResult(result.imageUri, result.amount, result.merchant, result.date);
+      finishWithResult(result.imageUri, result.amount, result.note, result.date);
     } catch (error) {
       // Defer applyScan until the user chooses "Enter amount manually" so
       // abandoning / retrying does not lock the log form in a failed scan state.

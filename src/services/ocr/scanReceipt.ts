@@ -8,16 +8,19 @@ export type ScanReceiptResult = {
   text: string;
   amount: number | null;
   merchant: string | null;
+  /** Structured note when present; otherwise merchant for the log form. */
+  note: string | null;
   /** Parsed purchase date when OCR or heuristics find one. */
   date: Date | null;
 };
 
-/** Compress → provider OCR → amount / merchant / date (structured or heuristic). */
+/** Compress → provider OCR → amount / merchant / note / date (structured or heuristic). */
 export async function scanReceipt(imageUri: string): Promise<ScanReceiptResult> {
   const prepared = await prepareReceiptImage(imageUri);
   const recognized = await recognizeReceipt(prepared.base64);
   const amount = recognized.amount ?? parseAmount(recognized.text);
   const merchant = recognized.merchant?.trim() || parseMerchant(recognized.text);
+  const note = recognized.note?.trim() || merchant;
 
   let date: Date | null = null;
   if (recognized.date?.trim()) {
@@ -31,6 +34,7 @@ export async function scanReceipt(imageUri: string): Promise<ScanReceiptResult> 
     text: recognized.text,
     amount,
     merchant,
+    note,
     date,
   };
 }

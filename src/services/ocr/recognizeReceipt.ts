@@ -2,9 +2,10 @@ import { env } from '@/constants/env';
 import { recognizeWithGoogleVision } from '@/services/ocr/providers/googleVision';
 import { recognizeWithInterfaze } from '@/services/ocr/providers/interfaze';
 import { recognizeWithOcrSpace } from '@/services/ocr/providers/ocrSpace';
+import { recognizeWithOpenRouter } from '@/services/ocr/providers/openRouter';
 import type { RecognizeResult } from '@/services/ocr/types';
 
-/** Dispatches to the provider selected by `EXPO_PUBLIC_OCR_PROVIDER` (default: google). */
+/** Dispatches to the provider selected by `EXPO_PUBLIC_OCR_PROVIDER` (default: llm). */
 export async function recognizeReceipt(base64Image: string): Promise<RecognizeResult> {
   switch (env.ocrProvider) {
     case 'ocrspace':
@@ -13,5 +14,7 @@ export async function recognizeReceipt(base64Image: string): Promise<RecognizeRe
       return recognizeWithInterfaze(base64Image);
     case 'google':
       return recognizeWithGoogleVision(base64Image);
+    case 'llm':
+      return recognizeWithOpenRouter(base64Image);
   }
 }

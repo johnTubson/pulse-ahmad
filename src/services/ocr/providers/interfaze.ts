@@ -1,23 +1,19 @@
-import { z } from 'zod';
-
 import { env } from '@/constants/env';
 import {
-  EMPTY_OCR_TEXT,
-  OcrError,
+  extractRecognizeResultFromChatContent,
+  RECEIPT_JSON_SCHEMA,
+  ReceiptSchema,
+} from '@/services/ocr/receiptSchema';
+import {
   jpegDataUrl,
   requireApiKey,
-  textOnlyResult,
   throwIfHttpFailed,
   type RecognizeResult,
 } from '@/services/ocr/types';
 
-const INTERFAZE_CHAT_URL = 'https://api.interfaze.ai/v1/chat/completions';
+export { ReceiptSchema };
 
-export const ReceiptSchema = z.object({
-  merchant: z.string().nullable().describe('Store or merchant name'),
-  amount: z.number().nullable().describe('Receipt total / amount due'),
-  date: z.string().nullable().describe('Purchase date if visible'),
-});
+const INTERFAZE_CHAT_URL = 'https://api.interfaze.ai/v1/chat/completions';
 
 export type InterfazePrecontextEntry = {
   name?: string;
@@ -29,13 +25,6 @@ export type InterfazeChatResponse = {
   precontext?: InterfazePrecontextEntry[];
   error?: { message?: string; type?: string; code?: string };
 };
-
-/** Static schema payload; built once (OpenAI-style structured outputs reject `$schema`). */
-const RECEIPT_JSON_SCHEMA = (() => {
-  const schema = z.toJSONSchema(ReceiptSchema) as Record<string, unknown>;
-  const { $schema: _schema, ...rest } = schema;
-  return rest;
-})();
 
 /** Pulls plain text from an Interfaze OCR precontext entry when present. */
 export function extractTextFromInterfazePrecontext(
@@ -58,36 +47,10 @@ export function extractTextFromInterfazePrecontext(
 
 /** Prefers structured receipt JSON; falls back to OCR precontext text. */
 export function extractRecognizeResultFromInterfaze(body: InterfazeChatResponse): RecognizeResult {
-  if (body.error?.message) {
-    throw new OcrError(body.error.message, 'api');
-  }
-
-  const content = body.choices?.[0]?.message?.content?.trim() ?? '';
-  const precontextText = extractTextFromInterfazePrecontext(body.precontext);
-
-  if (content) {
-    try {
-      const parsed = ReceiptSchema.parse(JSON.parse(content));
-      return {
-        text: precontextText ?? content,
-        amount: parsed.amount,
-        merchant: parsed.merchant?.trim() || null,
-        date: parsed.date?.trim() || null,
-      };
-    } catch {
-      // Content may be plain text or malformed JSON; fall through.
-    }
-  }
-
-  if (precontextText) {
-    return textOnlyResult(precontextText);
-  }
-
-  if (content) {
-    return textOnlyResult(content);
-  }
-
-  throw new OcrError(EMPTY_OCR_TEXT, 'empty');
+  return extractRecognizeResultFromChatContent(
+    body,
+    extractTextFromInterfazePrecontext(body.precontext),
+  );
 }
 
 /** Interfaze chat completions with structured receipt schema and ZDR. */
@@ -113,7 +76,7 @@ export async function recognizeWithInterfaze(base64Image: string): Promise<Recog
           content: [
             {
               type: 'text',
-              text: 'Extract merchant, total amount, and date from this receipt.',
+              text: 'Extract merchant, total amount, date, and a short note from this receipt.',
             },
             {
               type: 'image_url',

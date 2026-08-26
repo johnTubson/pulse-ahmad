@@ -35,6 +35,7 @@ describe('extractRecognizeResultFromInterfaze', () => {
               merchant: 'Coffee Shop',
               amount: 4.5,
               date: '2026-08-10',
+              note: 'Latte and muffin',
             }),
           },
         },
@@ -46,6 +47,7 @@ describe('extractRecognizeResultFromInterfaze', () => {
       text: 'Coffee Shop\nTOTAL 4.50',
       amount: 4.5,
       merchant: 'Coffee Shop',
+      note: 'Latte and muffin',
       date: '2026-08-10',
     });
   });
@@ -60,6 +62,7 @@ describe('extractRecognizeResultFromInterfaze', () => {
       text: 'TOTAL 3.00',
       amount: null,
       merchant: null,
+      note: null,
       date: null,
     });
   });

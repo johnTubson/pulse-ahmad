@@ -28,22 +28,25 @@ npm install
 cp .env.example .env
 ```
 
-| Variable                        | Description                                          |
-| ------------------------------- | ---------------------------------------------------- |
-| `EXPO_PUBLIC_SUPABASE_URL`      | Supabase project URL                                 |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (public) key                           |
-| `EXPO_PUBLIC_OCR_API_KEY`       | Google Cloud Vision API key (restrict to Vision API) |
-| `EXPO_PUBLIC_OCR_PROVIDER`      | `google` (default), `ocrspace`, or `interfaze`       |
-| `EXPO_PUBLIC_EAS_PROJECT_ID`    | From `eas init` / expo.dev (optional until building) |
-| `EXPO_PUBLIC_USE_MOCK_DATA`     | `true` = skip Supabase, seed ~60 days of demo data   |
+| Variable                                 | Description                                                        |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| `EXPO_PUBLIC_SUPABASE_URL`               | Supabase project URL                                               |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY`          | Supabase anon (public) key                                         |
+| `EXPO_PUBLIC_OCR_PROVIDER`               | `llm` (default), `google`, `ocrspace`, or `interfaze`              |
+| `EXPO_PUBLIC_OPENROUTER_API_KEY`         | OpenRouter API key (default LLM OCR)                               |
+| `EXPO_PUBLIC_OPENROUTER_MODEL`           | Optional; defaults to `qwen/qwen3.7-flash`                         |
+| `EXPO_PUBLIC_OPENROUTER_FALLBACK_MODELS` | Optional comma-separated vision models after primary on rate limit |
+| `EXPO_PUBLIC_OCR_API_KEY`                | Google Cloud Vision API key (when provider is google)              |
+| `EXPO_PUBLIC_EAS_PROJECT_ID`             | From `eas init` / expo.dev (optional until building)               |
+| `EXPO_PUBLIC_USE_MOCK_DATA`              | `true` = skip Supabase, seed ~60 days of demo data                 |
 
-### Google Cloud Vision (receipt OCR)
+### OpenRouter LLM (receipt OCR, default)
 
-1. In [Google Cloud Console](https://console.cloud.google.com/), enable **Cloud Vision API**.
-2. Create an **API key**, restrict it to Vision API (and optionally your app’s bundle IDs).
-3. Set `EXPO_PUBLIC_OCR_API_KEY` in `.env`, then restart Expo with `--clear`.
+1. Create an API key at [OpenRouter](https://openrouter.ai/keys).
+2. Set `EXPO_PUBLIC_OPENROUTER_API_KEY` in `.env` (and optionally `EXPO_PUBLIC_OPENROUTER_MODEL`).
+3. Restart Expo with `--clear`.
 
-Scan flow: Log → **Scan** → camera or library → OCR → amount / merchant / date pre-fill (always editable). On failure the receipt still attaches for manual entry.
+The LLM uses OpenRouter JSON mode (`response_format: json_object`) and returns merchant / amount / date / note. On **rate limit / 429**, it tries cheap vision fallbacks (`qwen/qwen3.5-flash-02-23`, `google/gemma-3-4b-it`, `mistralai/mistral-small-3.2-24b-instruct`) unless you set `EXPO_PUBLIC_OPENROUTER_FALLBACK_MODELS`. Scan flow: Log → **Scan** → camera or library → OCR → amount / merchant / date pre-fill (always editable). On failure the receipt still attaches for manual entry.
 
 ### Mock data (no Supabase)
 
@@ -128,3 +131,21 @@ npx eas build --profile preview
 ```
 
 Profiles: `development` (dev client), `preview` (internal testing), `production` (store).
+
+### Environment variables for APK / store builds
+
+Local `.env` is gitignored. Expo loads it for Metro / `expo run:*`, so OCR and Supabase work in dev and the development client. Standalone APKs (`preview` / `production`) bake `app.config.js` `extra` on the EAS build machine, so those vars must exist in EAS or the built app gets empty keys (receipt scan fails with a generic error).
+
+Add the same `EXPO_PUBLIC_*` values from `.env` for each build environment you use (`preview`, `production`, and optionally `development`):
+
+1. **Expo dashboard:** [expo.dev](https://expo.dev) → your project → **Environment variables** → create variables for the target environment(s).
+2. **Or CLI** (repeat per environment; use your real values):
+
+```bash
+eas env:create --name EXPO_PUBLIC_SUPABASE_URL --value 'https://your-project.supabase.co' --environment preview --visibility plaintext
+eas env:create --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value 'your-anon-key' --environment preview --visibility plaintext
+eas env:create --name EXPO_PUBLIC_OCR_PROVIDER --value 'llm' --environment preview --visibility plaintext
+eas env:create --name EXPO_PUBLIC_OPENROUTER_API_KEY --value 'your-openrouter-api-key' --environment preview --visibility plaintext
+```
+
+If you use another OCR provider, also set the matching key (`EXPO_PUBLIC_OCR_API_KEY`, `EXPO_PUBLIC_OCR_SPACE_API_KEY`, or `EXPO_PUBLIC_INTERFAZE_API_KEY`). Rebuild after changing EAS env vars; an already-installed APK will not pick them up.

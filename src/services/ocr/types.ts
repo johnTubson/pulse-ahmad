@@ -3,6 +3,8 @@ export type RecognizeResult = {
   /** Structured amount when the provider returns one; otherwise null for parseAmount. */
   amount: number | null;
   merchant: string | null;
+  /** Short expense note when the provider returns one; otherwise null. */
+  note: string | null;
   /** ISO or freeform date string when the provider returns one; heuristics fill gaps. */
   date: string | null;
 };
@@ -20,7 +22,7 @@ export class OcrError extends Error {
 export const EMPTY_OCR_TEXT = 'No text found on this receipt.';
 
 export function textOnlyResult(text: string): RecognizeResult {
-  return { text, amount: null, merchant: null, date: null };
+  return { text, amount: null, merchant: null, note: null, date: null };
 }
 
 export function requireApiKey(value: string, missingMessage: string): string {
