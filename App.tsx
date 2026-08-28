@@ -2,10 +2,10 @@
  * Expo Snack entry shim. Snack requires a root App file; local dev still uses
  * `expo-router/entry` from package.json `main`.
  */
-import { ExpoRoot } from 'expo-router';
+import { ExpoRoot, type RequireContext } from 'expo-router';
 import Head from 'expo-router/head';
 
-const appContext = require.context('./app');
+const appContext = (require as { context(path: string): RequireContext }).context('./app');
 
 export default function SnackEntry() {
   return (
