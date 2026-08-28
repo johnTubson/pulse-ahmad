@@ -34,9 +34,9 @@ describe('resolveOpenRouterModelCascade', () => {
   });
 
   it('dedupes when primary is already a fallback', () => {
-    expect(resolveOpenRouterModelCascade('openai/gpt-4o-mini')).toEqual([
-      'openai/gpt-4o-mini',
-      'google/gemini-2.5-flash-lite',
+    expect(resolveOpenRouterModelCascade('qwen/qwen3.5-flash-02-23')).toEqual([
+      'qwen/qwen3.5-flash-02-23',
+      'google/gemma-3-4b-it',
       'mistralai/mistral-small-3.2-24b-instruct',
     ]);
   });
@@ -146,10 +146,10 @@ describe('extractRecognizeResultFromOpenRouter', () => {
 });
 
 describe('recognizeWithOpenRouter fallbacks', () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     jest.restoreAllMocks();
   });
 
@@ -182,7 +182,7 @@ describe('recognizeWithOpenRouter fallbacks', () => {
       .fn()
       .mockResolvedValueOnce(jsonResponse(429, 'Rate limit exceeded'))
       .mockResolvedValueOnce(jsonResponse(200, successBody));
-    global.fetch = fetchMock as unknown as typeof fetch;
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     const result = await recognizeWithOpenRouter('abc123');
 
@@ -198,7 +198,7 @@ describe('recognizeWithOpenRouter fallbacks', () => {
 
   it('does not fall through on non-rate-limit HTTP errors', async () => {
     const fetchMock = jest.fn().mockResolvedValueOnce(jsonResponse(401, 'Unauthorized'));
-    global.fetch = fetchMock as unknown as typeof fetch;
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     await expect(recognizeWithOpenRouter('abc123')).rejects.toMatchObject({
       code: 'http',
@@ -208,7 +208,7 @@ describe('recognizeWithOpenRouter fallbacks', () => {
 
   it('throws the last rate-limit error when every model is limited', async () => {
     const fetchMock = jest.fn().mockResolvedValue(jsonResponse(429, 'Rate limit exceeded'));
-    global.fetch = fetchMock as unknown as typeof fetch;
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     await expect(recognizeWithOpenRouter('abc123')).rejects.toMatchObject({
       code: 'http',
