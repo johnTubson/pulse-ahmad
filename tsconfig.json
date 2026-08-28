@@ -15,7 +15,8 @@
     "**/*.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts"
+    "nativewind-env.d.ts",
+    "snack-env.d.ts"
   ],
   "exclude": ["scripts/**", "design-tokens/**"]
 }
