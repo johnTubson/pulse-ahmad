@@ -7,9 +7,6 @@ import type { CategoryId } from '@/types/finance';
 
 type UiState = {
   hasCompletedOnboarding: boolean;
-  /** Accelerometer threshold for shake-to-log; higher = harder to trigger. */
-  shakeSensitivity: number;
-  shakeToLogEnabled: boolean;
   /** ISO 4217 currency code for `formatMoney()`. */
   currency: string;
   /** Optional display name; falls back to email local-part in UI. */
@@ -21,11 +18,9 @@ type UiState = {
   /** Category ids hidden from the log grid (still valid on existing expenses). */
   hiddenCategoryIds: CategoryId[];
   toast: string | null;
-  /** Transient quick-log overlay opened by shake or settings test. */
+  /** Transient quick-log overlay. */
   quickLogOpen: boolean;
   completeOnboarding: () => void;
-  setShakeSensitivity: (value: number) => void;
-  setShakeToLogEnabled: (enabled: boolean) => void;
   setCurrency: (currency: string) => void;
   setDisplayName: (name: string | null) => void;
   setDailyReminderEnabled: (enabled: boolean) => void;
@@ -42,8 +37,6 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       hasCompletedOnboarding: false,
-      shakeSensitivity: 1.7,
-      shakeToLogEnabled: true,
       currency: 'USD',
       displayName: null,
       dailyReminderEnabled: false,
@@ -53,8 +46,6 @@ export const useUiStore = create<UiState>()(
       toast: null,
       quickLogOpen: false,
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
-      setShakeSensitivity: (value) => set({ shakeSensitivity: value }),
-      setShakeToLogEnabled: (enabled) => set({ shakeToLogEnabled: enabled }),
       setCurrency: (currency) => {
         setCurrencyPreference(currency);
         set({ currency });
@@ -79,8 +70,6 @@ export const useUiStore = create<UiState>()(
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         hasCompletedOnboarding: state.hasCompletedOnboarding,
-        shakeSensitivity: state.shakeSensitivity,
-        shakeToLogEnabled: state.shakeToLogEnabled,
         currency: state.currency,
         displayName: state.displayName,
         dailyReminderEnabled: state.dailyReminderEnabled,

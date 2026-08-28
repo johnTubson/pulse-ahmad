@@ -1,4 +1,3 @@
-import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useReducer } from 'react';
 
@@ -15,6 +14,7 @@ import { useMoodStore } from '@/stores/moodStore';
 import { useScanDraftStore } from '@/stores/scanDraftStore';
 import { useUiStore } from '@/stores/uiStore';
 import type { CategoryId, MoodValue } from '@/types/finance';
+import { hapticSuccess } from '@/utils/haptics';
 
 async function resolveImageUrl(
   userId: string,
@@ -49,6 +49,7 @@ export function useLogForm() {
   const suggestedAmount = useScanDraftStore((s) => s.suggestedAmount);
   const suggestedNote = useScanDraftStore((s) => s.suggestedNote);
   const suggestedDate = useScanDraftStore((s) => s.suggestedDate);
+  const suggestedCategoryId = useScanDraftStore((s) => s.suggestedCategoryId);
   const clearReceipt = useScanDraftStore((s) => s.clearReceipt);
   const resetScanDraft = useScanDraftStore((s) => s.reset);
 
@@ -63,6 +64,7 @@ export function useLogForm() {
       amount: suggestedAmount,
       note: suggestedNote,
       occurredAt: suggestedDate ? new Date(suggestedDate) : null,
+      categoryId: suggestedCategoryId,
     });
   }
 
@@ -83,7 +85,7 @@ export function useLogForm() {
     dispatch({ type: 'SAVE_START' });
     void (async () => {
       try {
-        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        hapticSuccess();
         const imageUrl = await resolveImageUrl(userId, receiptUri, () =>
           showToast('Receipt saved locally. Cloud upload will retry later'),
         );
@@ -113,7 +115,19 @@ export function useLogForm() {
 
     dispatch({ type: 'CLOSE_MOOD' });
     resetForm();
-    router.navigate('/(tabs)');
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.navigate('/(tabs)');
+    }
+  };
+
+  const goHome = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.navigate('/(tabs)');
+    }
   };
 
   return {
@@ -139,6 +153,6 @@ export function useLogForm() {
     openLibraryScanner,
     save,
     finish,
-    goHome: () => router.navigate('/(tabs)'),
+    goHome,
   };
 }

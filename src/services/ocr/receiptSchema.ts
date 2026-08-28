@@ -6,12 +6,14 @@ import {
   textOnlyResult,
   type RecognizeResult,
 } from '@/services/ocr/types';
+import { CATEGORY_IDS, type CategoryId } from '@/types/finance';
 
 export const ReceiptSchema = z.object({
   merchant: z.string().nullable().describe('Store or merchant name'),
   amount: z.number().nullable().describe('Receipt total / amount due'),
   date: z.string().nullable().describe('Purchase date if visible'),
   note: z.string().nullable().describe('Short expense note, e.g. what was purchased'),
+  category: z.enum(CATEGORY_IDS as [CategoryId, ...CategoryId[]]).nullish(),
 });
 
 /** Prompt text for JSON-mode models that lack native json_schema enforcement. */
@@ -21,7 +23,8 @@ export const RECEIPT_JSON_OBJECT_INSTRUCTION = [
   'merchant (string or null): store or merchant name,',
   'amount (number or null): receipt total / amount due,',
   'date (string or null): purchase date if visible,',
-  'note (string or null): short expense note, e.g. what was purchased.',
+  'note (string or null): short expense note, e.g. what was purchased,',
+  `category (string or null): one of ${CATEGORY_IDS.join(', ')}.`,
 ].join(' ');
 
 /** Static schema payload; built once (OpenAI-style structured outputs reject `$schema`). */
@@ -67,6 +70,7 @@ export function extractRecognizeResultFromChatContent(
         merchant: parsed.merchant?.trim() || null,
         note: parsed.note?.trim() || null,
         date: parsed.date?.trim() || null,
+        categoryId: parsed.category ?? null,
       };
     } catch {
       // Content may be plain text or malformed JSON; fall through.

@@ -1,5 +1,4 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useReducer, useRef } from 'react';
@@ -15,6 +14,8 @@ import {
 } from '@/features/log/scannerReducer';
 import { scanReceipt } from '@/services/ocr/scanReceipt';
 import { useScanDraftStore } from '@/stores/scanDraftStore';
+import type { CategoryId } from '@/types/finance';
+import { hapticError, hapticSuccess, hapticWarning } from '@/utils/haptics';
 
 /** One-shot guard so a prefilled `uri` starts OCR from onLayout, not during render. */
 let startedOcrForUri: string | null = null;
@@ -38,14 +39,15 @@ export function useScanner() {
     amount: number | null,
     note?: string | null,
     date?: Date | null,
+    categoryId?: CategoryId | null,
   ) => {
     startedOcrForUri = null;
-    applyScan({ receiptUri: imageUri, amount, note, date });
-    void Haptics.notificationAsync(
-      amount != null
-        ? Haptics.NotificationFeedbackType.Success
-        : Haptics.NotificationFeedbackType.Warning,
-    );
+    applyScan({ receiptUri: imageUri, amount, note, date, categoryId });
+    if (amount != null) {
+      hapticSuccess();
+    } else {
+      hapticWarning();
+    }
     router.back();
   };
 
@@ -64,11 +66,11 @@ export function useScanner() {
         step: result.amount != null ? 3 : 2,
       });
       await sleep(500);
-      finishWithResult(result.imageUri, result.amount, result.note, result.date);
+      finishWithResult(result.imageUri, result.amount, result.note, result.date, result.categoryId);
     } catch (error) {
       // Defer applyScan until the user chooses "Enter amount manually" so
       // abandoning / retrying does not lock the log form in a failed scan state.
-      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      hapticError();
       dispatch({ type: 'OCR_FAIL', message: ocrErrorMessage(error) });
     } finally {
       dispatch({ type: 'SET_IDLE' });

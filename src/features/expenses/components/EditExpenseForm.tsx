@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useReducer } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
+import { ExpenseScreenHeader } from '@/features/expenses/components/ExpenseScreenHeader';
 import { AmountDisplay } from '@/features/log/components/AmountDisplay';
 import { CategoryGrid } from '@/features/log/components/CategoryGrid';
 import { DateTimeRow } from '@/features/log/components/DateTimeRow';
@@ -13,6 +14,7 @@ import { formatMoney } from '@/lib/currency/formatMoney';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useUiStore } from '@/stores/uiStore';
 import type { CategoryId, Expense } from '@/types/finance';
+import { hapticMedium, hapticSuccess } from '@/utils/haptics';
 
 type EditState = {
   amount: string;
@@ -66,6 +68,7 @@ export function EditExpenseForm({ expense }: EditExpenseFormProps) {
 
   const save = () => {
     if (!canSave) return;
+    hapticSuccess();
     update(expense.id, {
       amount: parsed,
       categoryId: state.categoryId,
@@ -83,6 +86,7 @@ export function EditExpenseForm({ expense }: EditExpenseFormProps) {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
+          hapticMedium();
           remove(expense.id);
           showToast('Expense deleted');
           router.back();
@@ -102,10 +106,7 @@ export function EditExpenseForm({ expense }: EditExpenseFormProps) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-1 mt-2 text-3xl font-bold text-text">Edit expense</Text>
-        <Text className="mb-6 text-sm text-text-muted">
-          Change the details or delete this entry.
-        </Text>
+        <ExpenseScreenHeader title="Edit expense" onBack={() => router.back()} />
 
         <AmountDisplay
           value={state.amount}

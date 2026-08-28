@@ -69,7 +69,7 @@ function maybeNudgeIfNoLogToday(): void {
   const today = dayKey(new Date().toISOString());
   const loggedToday = useExpenseStore.getState().expenses.some((e) => dayKey(e.date) === today);
   if (!loggedToday) {
-    showToast('No log yet today. Shake or tap + to add one.');
+    showToast('No log yet today. Tap + to add one.');
   }
 }
 

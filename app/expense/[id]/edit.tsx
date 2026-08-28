@@ -1,18 +1,14 @@
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 
 import { Screen } from '@/components/ui/Screen';
-import { ExpenseDetailView } from '@/features/expenses/components/ExpenseDetailView';
+import { EditExpenseForm } from '@/features/expenses/components/EditExpenseForm';
 import { ExpenseNotFound } from '@/features/expenses/components/ExpenseScreenHeader';
-import { moodByExpenseMap } from '@/lib/analytics/moodJoin';
 import { useExpenseStore } from '@/stores/expenseStore';
-import { useMoodStore } from '@/stores/moodStore';
 
-export default function ExpenseDetailScreen() {
+export default function ExpenseEditScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const id = typeof params.id === 'string' ? params.id : '';
   const expense = useExpenseStore((s) => s.expenses.find((e) => e.id === id));
-  const moods = useMoodStore((s) => s.moods);
-  const moodByExpense = moodByExpenseMap(moods);
 
   if (!id) {
     return <Redirect href="/(tabs)" />;
@@ -30,7 +26,7 @@ export default function ExpenseDetailScreen() {
   return (
     <Screen className="bg-surface px-0">
       <Stack.Screen options={{ headerShown: false }} />
-      <ExpenseDetailView expense={expense} mood={moodByExpense.get(expense.id) ?? null} />
+      <EditExpenseForm expense={expense} />
     </Screen>
   );
 }

@@ -10,9 +10,6 @@ const config = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.johntubson.pulse',
-    infoPlist: {
-      NSMotionUsageDescription: 'Pulse uses motion sensors for shake-to-log quick expense entry.',
-    },
   },
   android: {
     package: 'com.johntubson.pulse',
@@ -59,7 +56,6 @@ const config = {
         photosPermission: 'Allow Pulse to attach receipt photos from your library.',
       },
     ],
-    'expo-sensors',
     'expo-notifications',
     '@react-native-community/datetimepicker',
   ],

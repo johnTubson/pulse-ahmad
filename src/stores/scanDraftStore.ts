@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import type { CategoryId } from '@/types/finance';
+
 export type OcrStatus = 'idle' | 'success' | 'failed';
 
 type ScanDraftState = {
@@ -11,6 +13,8 @@ type ScanDraftState = {
   suggestedNote: string | null;
   /** Suggested purchase date ISO; null when none. */
   suggestedDate: string | null;
+  /** Suggested category from OCR; null when none. */
+  suggestedCategoryId: CategoryId | null;
   /** Monotonic token so LogForm can apply each new scan once. */
   scanToken: number;
   applyScan: (input: {
@@ -18,6 +22,7 @@ type ScanDraftState = {
     amount: number | null;
     note?: string | null;
     date?: Date | null;
+    categoryId?: CategoryId | null;
   }) => void;
   clearReceipt: () => void;
   reset: () => void;
@@ -29,14 +34,16 @@ export const useScanDraftStore = create<ScanDraftState>((set) => ({
   suggestedAmount: null,
   suggestedNote: null,
   suggestedDate: null,
+  suggestedCategoryId: null,
   scanToken: 0,
 
-  applyScan: ({ receiptUri, amount, note, date }) =>
+  applyScan: ({ receiptUri, amount, note, date, categoryId }) =>
     set((state) => ({
       receiptUri,
       suggestedAmount: amount,
       suggestedNote: note?.trim() || null,
       suggestedDate: date && !Number.isNaN(date.getTime()) ? date.toISOString() : null,
+      suggestedCategoryId: categoryId ?? null,
       ocrStatus: amount != null ? 'success' : 'failed',
       scanToken: state.scanToken + 1,
     })),
@@ -48,6 +55,7 @@ export const useScanDraftStore = create<ScanDraftState>((set) => ({
       suggestedAmount: null,
       suggestedNote: null,
       suggestedDate: null,
+      suggestedCategoryId: null,
     }),
 
   reset: () =>
@@ -57,6 +65,7 @@ export const useScanDraftStore = create<ScanDraftState>((set) => ({
       suggestedAmount: null,
       suggestedNote: null,
       suggestedDate: null,
+      suggestedCategoryId: null,
       scanToken: 0,
     }),
 }));

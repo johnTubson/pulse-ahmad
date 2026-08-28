@@ -1,4 +1,3 @@
-import * as Haptics from 'expo-haptics';
 import { useReducer } from 'react';
 
 import { MOOD_META } from '@/constants/mood';
@@ -8,6 +7,7 @@ import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
 import { useUiStore } from '@/stores/uiStore';
 import type { CategoryId, MoodValue } from '@/types/finance';
+import { hapticSuccess } from '@/utils/haptics';
 
 type QuickLogState = {
   amount: string;
@@ -61,7 +61,7 @@ export function useQuickLog() {
   const save = () => {
     const categoryId = state.categoryId;
     if (!userId || !canSave || categoryId == null) return;
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    hapticSuccess();
     const expense = addExpense(userId, {
       amount: parsed,
       categoryId,

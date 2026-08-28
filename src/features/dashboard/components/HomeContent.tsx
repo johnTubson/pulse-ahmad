@@ -35,6 +35,7 @@ const RECENT_LIMIT = 5;
 
 type HomeContentProps = {
   onProfilePress: () => void;
+  onNotificationsPress: () => void;
   onLogMood: () => void;
   onSeeEvidence: () => void;
   onSeeAll: () => void;
@@ -43,6 +44,7 @@ type HomeContentProps = {
 
 export function HomeContent({
   onProfilePress,
+  onNotificationsPress,
   onLogMood,
   onSeeEvidence,
   onSeeAll,
@@ -94,7 +96,12 @@ export function HomeContent({
 
   return (
     <>
-      <GreetingHeader greeting={greeting} name={name} onProfilePress={onProfilePress} />
+      <GreetingHeader
+        greeting={greeting}
+        name={name}
+        onProfilePress={onProfilePress}
+        onNotificationsPress={onNotificationsPress}
+      />
 
       <ToastBanner />
 

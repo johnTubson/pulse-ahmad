@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { CategoryTile } from '@/features/log/components/CategoryTile';
 import { useUiStore } from '@/stores/uiStore';
@@ -36,7 +36,6 @@ export function CategoryGrid({
 
   return (
     <View className={cn('rounded-2xl bg-grey-100 p-3', className)}>
-      <Text className="mb-2.5 text-sm font-medium text-text-muted">Category</Text>
       <View className="gap-2">
         {rows.map((row) => (
           <View key={row.join('-')} className="flex-row gap-2">

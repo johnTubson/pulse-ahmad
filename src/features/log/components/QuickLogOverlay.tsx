@@ -46,12 +46,12 @@ function QuickLogSheet() {
             >
               <View className="mb-4 h-1 w-10 self-center rounded-full bg-grey-300" />
 
-              <View className="mb-4 flex-row items-center justify-between">
+              <View className="relative mb-4 items-center justify-center">
                 <Text className="text-xl font-bold text-text">Quick log</Text>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="Close quick log"
-                  className="h-9 w-9 items-center justify-center rounded-full bg-grey-100 active:opacity-70"
+                  className="absolute right-0 h-9 w-9 items-center justify-center rounded-full bg-grey-100 active:opacity-70"
                   onPress={form.dismiss}
                 >
                   <SymbolView

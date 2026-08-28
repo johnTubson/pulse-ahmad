@@ -92,6 +92,7 @@ describe('extractRecognizeResultFromOpenRouter', () => {
       merchant: 'Coffee Shop',
       note: 'Latte and muffin',
       date: '2026-08-10',
+      categoryId: null,
     });
   });
 
@@ -106,6 +107,7 @@ describe('extractRecognizeResultFromOpenRouter', () => {
       merchant: null,
       note: null,
       date: null,
+      categoryId: null,
     });
   });
 
@@ -126,6 +128,7 @@ describe('extractRecognizeResultFromOpenRouter', () => {
       merchant: 'Market',
       note: 'Groceries',
       date: null,
+      categoryId: null,
     });
   });
 

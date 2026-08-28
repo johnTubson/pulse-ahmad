@@ -40,15 +40,33 @@ describe('resolvePeriodRange', () => {
     expect(range.start).toBe('2026-05-01');
     expect(range.end).toBe('2026-07-22');
   });
+
+  it('resolves allTime from earliest expense through today', () => {
+    const range = resolvePeriodRange('allTime', now, '2026-01-15');
+    expect(range.start).toBe('2026-01-15');
+    expect(range.end).toBe('2026-07-22');
+    expect(range.label).toBe('All time');
+  });
+
+  it('formats month range in Figma style', () => {
+    const range = resolvePeriodRange('month', new Date(2026, 5, 30));
+    expect(range.label).toBe('1st June - 30th June');
+  });
 });
 
 describe('previousPeriodRange', () => {
   it('shifts back by the same day count', () => {
     const current = resolvePeriodRange('week', new Date(2026, 6, 22));
-    const prev = previousPeriodRange(current);
+    const prev = previousPeriodRange(current, 'week');
+    if (!prev) throw new Error('expected previous range');
     expect(prev.start).toBe('2026-07-09');
     expect(prev.end).toBe('2026-07-15');
     expect(daysInRange(prev)).toBe(daysInRange(current));
+  });
+
+  it('returns null for all-time', () => {
+    const current = resolvePeriodRange('allTime', new Date(2026, 6, 22), '2026-01-01');
+    expect(previousPeriodRange(current, 'allTime')).toBeNull();
   });
 });
 

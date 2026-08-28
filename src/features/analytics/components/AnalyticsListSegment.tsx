@@ -11,6 +11,7 @@ import {
   periodHeroLabel,
   previousPeriodRange,
   sumExpenses,
+  vsPriorLabel,
   type AnalyticsPeriod,
   type DateRange,
 } from '@/lib/analytics/period';
@@ -32,19 +33,13 @@ export function AnalyticsListSegment({
   onExpensePress,
 }: AnalyticsListSegmentProps) {
   const inRange = filterExpensesByRange(expenses, range);
-  const previous = filterExpensesByRange(expenses, previousPeriodRange(range));
+  const previousRange = previousPeriodRange(range, period);
+  const previous = previousRange ? filterExpensesByRange(expenses, previousRange) : [];
   const total = sumExpenses(inRange);
   const prevTotal = sumExpenses(previous);
   const delta = percentChange(total, prevTotal);
   const dayCount = daysInRange(range);
   const sorted = [...inRange].sort((a, b) => b.date.localeCompare(a.date));
-
-  const vsLabel =
-    period === 'week'
-      ? 'vs last week'
-      : period === 'threeMonth'
-        ? 'vs prior 3 mo'
-        : 'vs last month';
 
   return (
     <View className="min-h-0 flex-1">
@@ -52,7 +47,9 @@ export function AnalyticsListSegment({
         title={`Total Spend ${periodHeroLabel(period)}`}
         total={total}
         metrics={[
-          { label: vsLabel, value: formatDeltaPercent(delta) },
+          ...(previousRange
+            ? [{ label: vsPriorLabel(period), value: formatDeltaPercent(delta) }]
+            : []),
           { label: 'Avg/day', value: formatAvgPerDay(total, dayCount) },
           { label: 'Expenses log', value: String(sorted.length) },
         ]}

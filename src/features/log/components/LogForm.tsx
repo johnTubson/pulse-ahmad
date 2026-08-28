@@ -1,10 +1,10 @@
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { ExpenseScreenHeader } from '@/features/expenses/components/ExpenseScreenHeader';
 import { AmountDisplay } from '@/features/log/components/AmountDisplay';
 import { CategoryGrid } from '@/features/log/components/CategoryGrid';
 import { DateTimeRow } from '@/features/log/components/DateTimeRow';
-import { LogHeader } from '@/features/log/components/LogHeader';
 import { MoodSheet } from '@/features/log/components/MoodSheet';
 import { NoteField } from '@/features/log/components/NoteField';
 import { ReceiptAttachedRow } from '@/features/log/components/ReceiptAttachedRow';
@@ -25,7 +25,12 @@ export function LogForm() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <LogHeader scanned={form.scanned} onBack={form.goHome} onScan={form.openScanSheet} />
+        <ExpenseScreenHeader
+          title="Log expense"
+          scanned={form.scanned}
+          onBack={form.goHome}
+          onScan={form.openScanSheet}
+        />
 
         <AmountDisplay value={form.amount} onChangeText={form.setAmount} className="mb-3" />
 

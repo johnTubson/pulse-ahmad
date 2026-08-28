@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { CATEGORY_META } from '@/constants/categories';
 import type { CategoryId } from '@/types/finance';
 import { cn } from '@/utils/cn';
+import { hapticLight } from '@/utils/haptics';
 
 type CategoryTileProps = {
   categoryId: CategoryId;
@@ -20,9 +21,12 @@ export function CategoryTile({ categoryId, selected, onPress }: CategoryTileProp
       accessibilityLabel={meta.label}
       className={cn(
         'min-h-[76px] flex-1 rounded-xl border bg-surface p-2.5 active:opacity-80',
-        selected ? 'border-primary' : 'border-transparent',
+        selected ? 'border-2 border-primary' : 'border border-transparent',
       )}
-      onPress={onPress}
+      onPress={() => {
+        hapticLight();
+        onPress();
+      }}
     >
       <View className="mb-2 flex-row items-start justify-between">
         <Text className="text-lg">{meta.emoji}</Text>

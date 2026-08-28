@@ -11,7 +11,7 @@ type MetricTile = {
 type TotalSpendCardProps = {
   title: string;
   total: number;
-  metrics: [MetricTile, MetricTile, MetricTile];
+  metrics: MetricTile[];
   className?: string;
 };
 

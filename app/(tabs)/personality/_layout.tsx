@@ -18,7 +18,8 @@ export default function PersonalityStackLayout() {
       <Stack.Screen name="categories" options={{ title: 'Categories' }} />
       <Stack.Screen name="notifications" options={{ title: 'Notification' }} />
       <Stack.Screen name="data-export" options={{ title: 'Data export' }} />
-      <Stack.Screen name="privacy" options={{ title: 'Privacy & security' }} />
+      <Stack.Screen name="budget" options={{ title: 'Set budget' }} />
+      <Stack.Screen name="account" options={{ title: 'Account settings' }} />
     </Stack>
   );
 }

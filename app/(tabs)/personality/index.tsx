@@ -9,9 +9,12 @@ export default function PersonalityScreen() {
   return (
     <View className="flex-1">
       <Screen scroll>
-        <PersonalityContent onSettingsPress={() => router.push('/(tabs)/personality/settings')} />
+        <PersonalityContent
+          onSettingsPress={() => router.push('/(tabs)/personality/settings')}
+          onNotificationsPress={() => router.push('/notifications')}
+        />
       </Screen>
-      <Fab onPress={() => router.push('/(tabs)/log')} />
+      <Fab onPress={() => router.push('/log')} />
     </View>
   );
 }

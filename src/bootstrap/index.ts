@@ -1,8 +1,8 @@
 import { env } from '@/constants/env';
-import { attachShakeToLog } from '@/services/sensors/shakeToLog';
 import { useAuthStore } from '@/stores/authStore';
 import { startOfflineQueueListener } from '@/stores/offlineQueue';
 
+import { attachBudgetAlerts } from './budgetAlerts';
 import { loadMockData } from './loadMockData';
 import { attachNotifications } from './notifications';
 import { attachSyncOnAuth } from './syncOnAuth';
@@ -20,8 +20,8 @@ export function bootstrapApp(): void {
   if (bootstrapped) return;
   bootstrapped = true;
 
-  attachShakeToLog();
   attachNotifications();
+  attachBudgetAlerts();
 
   if (env.useMockData) {
     loadMockData();

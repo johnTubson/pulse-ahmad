@@ -63,7 +63,7 @@ export function ExpenseRow({
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Edit ${title}`}
+        accessibilityLabel={`View ${title}`}
         className={cn('bg-transparent active:opacity-80', className)}
         onPress={onPress}
       >

@@ -23,6 +23,7 @@ export type LogFormAction =
       amount: number | null;
       note?: string | null;
       occurredAt?: Date | null;
+      categoryId?: CategoryId | null;
     }
   | { type: 'OPEN_SCAN_SHEET' }
   | { type: 'CLOSE_SCAN_SHEET' }
@@ -72,6 +73,7 @@ export function logFormReducer(state: LogFormState, action: LogFormAction): LogF
           action.occurredAt && !Number.isNaN(action.occurredAt.getTime())
             ? action.occurredAt
             : state.occurredAt,
+        categoryId: action.categoryId ?? state.categoryId,
       };
     case 'OPEN_SCAN_SHEET':
       return { ...state, scanVisible: true };

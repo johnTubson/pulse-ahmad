@@ -12,7 +12,8 @@ export default function SettingsScreen() {
         onCategories={() => router.push('/(tabs)/personality/categories')}
         onNotifications={() => router.push('/(tabs)/personality/notifications')}
         onDataExport={() => router.push('/(tabs)/personality/data-export')}
-        onPrivacy={() => router.push('/(tabs)/personality/privacy')}
+        onBudget={() => router.push('/(tabs)/personality/budget')}
+        onAccount={() => router.push('/(tabs)/personality/account')}
       />
     </Screen>
   );

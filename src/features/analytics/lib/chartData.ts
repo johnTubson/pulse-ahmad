@@ -161,6 +161,24 @@ export function dailyMoodSeries(moods: Mood[], range: DateRange): MoodTrendSerie
   };
 }
 
+/** Summary copy for the By period mood line chart. Expects moods already filtered to the range. */
+export function periodMoodChartCopy(moods: Mood[]): string {
+  if (moods.length === 0) {
+    return 'Log moods in this period to see your daily pattern.';
+  }
+
+  const average = moods.reduce((sum, mood) => sum + mood.value, 0) / moods.length;
+  const uniqueDays = new Set(moods.map((mood) => dayKey(mood.createdAt))).size;
+
+  if (average >= 4) {
+    return `Your mood averaged ${average.toFixed(1)} across ${uniqueDays} day${uniqueDays === 1 ? '' : 's'} in this period.`;
+  }
+  if (average <= 2.5) {
+    return `Your mood dipped to ${average.toFixed(1)} on average across ${uniqueDays} day${uniqueDays === 1 ? '' : 's'}.`;
+  }
+  return `Your mood held steady around ${average.toFixed(1)} across ${uniqueDays} day${uniqueDays === 1 ? '' : 's'}.`;
+}
+
 export type TopInsight =
   | { unlocked: false }
   | {

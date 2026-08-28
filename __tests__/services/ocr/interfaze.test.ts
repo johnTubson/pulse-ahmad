@@ -49,6 +49,7 @@ describe('extractRecognizeResultFromInterfaze', () => {
       merchant: 'Coffee Shop',
       note: 'Latte and muffin',
       date: '2026-08-10',
+      categoryId: null,
     });
   });
 
@@ -64,6 +65,7 @@ describe('extractRecognizeResultFromInterfaze', () => {
       merchant: null,
       note: null,
       date: null,
+      categoryId: null,
     });
   });
 

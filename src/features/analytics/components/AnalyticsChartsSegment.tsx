@@ -13,6 +13,7 @@ import {
   dailyMoodSeries,
   filterMoodsByRange,
   moodSpendChartCopy,
+  periodMoodChartCopy,
   spendByTimeOfDay,
   timeOfDaySummary,
   withMoods,
@@ -68,6 +69,7 @@ export function AnalyticsChartsSegment({
     percentage: row.percentage,
   }));
   const moodLine = dailyMoodSeries(moodsInRange, range);
+  const periodMoodSummary = periodMoodChartCopy(moodsInRange);
   const timeBuckets = spendByTimeOfDay(inRange);
   const { progress, daysRemaining } = personalityUnlockProgress(expenses);
   const centerTotal = sumExpenses(inRange);
@@ -93,12 +95,13 @@ export function AnalyticsChartsSegment({
       </View>
 
       <View>
-        <Text className="mb-2 text-base font-bold text-text">Mood trend</Text>
+        <Text className="mb-2 text-base font-bold text-text">By period</Text>
         {svgReady ? (
           <LineChartCard
             data={moodLine.points}
             rangeStartLabel={moodLine.rangeStartLabel}
             rangeEndLabel={moodLine.rangeEndLabel}
+            summary={periodMoodSummary}
           />
         ) : (
           <View className="h-[220px] rounded-3xl bg-rose-50" />

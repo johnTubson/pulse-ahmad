@@ -1,6 +1,7 @@
 import { Pressable, Text } from 'react-native';
 
 import { cn } from '@/utils/cn';
+import { hapticMedium } from '@/utils/haptics';
 
 type FabProps = {
   onPress: () => void;
@@ -17,7 +18,10 @@ export function Fab({ onPress, accessibilityLabel = 'Log expense', className }: 
         'absolute bottom-6 right-5 z-10 h-14 w-14 items-center justify-center rounded-full bg-primary shadow-md active:opacity-80',
         className,
       )}
-      onPress={onPress}
+      onPress={() => {
+        hapticMedium();
+        onPress();
+      }}
     >
       <Text className="text-3xl font-light leading-8 text-white">+</Text>
     </Pressable>

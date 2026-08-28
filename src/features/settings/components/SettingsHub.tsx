@@ -8,7 +8,7 @@ import { SettingsGroup } from '@/components/ui/SettingsGroup';
 import { SettingsRow, SignOutRow } from '@/components/ui/SettingsRow';
 import { env } from '@/constants/env';
 import { palette } from '@/constants/theme';
-import { firstNameFrom } from '@/features/dashboard/lib/greeting';
+import { displayHeaderName, firstNameFrom } from '@/features/dashboard/lib/greeting';
 import { calculateStreak } from '@/lib/analytics/streaks';
 import { useAuthStore } from '@/stores/authStore';
 import { useExpenseStore } from '@/stores/expenseStore';
@@ -21,15 +21,9 @@ type SettingsHubProps = {
   onCategories: () => void;
   onNotifications: () => void;
   onDataExport: () => void;
-  onPrivacy: () => void;
+  onBudget: () => void;
+  onAccount: () => void;
 };
-
-function displayHeaderName(displayName: string | null, email: string | null): string {
-  if (displayName?.trim()) return displayName.trim();
-  const first = firstNameFrom(email);
-  if (first === 'there') return 'You';
-  return `${first}. ${first.charAt(0)}`;
-}
 
 export function SettingsHub({
   onBack,
@@ -37,7 +31,8 @@ export function SettingsHub({
   onCategories,
   onNotifications,
   onDataExport,
-  onPrivacy,
+  onBudget,
+  onAccount,
 }: SettingsHubProps) {
   const userId = useAuthStore((s) => s.userId);
   const email = useAuthStore((s) => s.email);
@@ -147,14 +142,19 @@ export function SettingsHub({
           onPress={onNotifications}
         />
         <SettingsRow
+          label="Set budget"
+          icon={{ ios: 'chart.pie', android: 'pie_chart', web: 'pie_chart' }}
+          onPress={onBudget}
+        />
+        <SettingsRow
           label="Data export"
           icon={{ ios: 'square.and.arrow.up', android: 'upload', web: 'upload' }}
           onPress={onDataExport}
         />
         <SettingsRow
-          label="Privacy & security"
+          label="Account settings"
           icon={{ ios: 'shield', android: 'shield', web: 'shield' }}
-          onPress={onPrivacy}
+          onPress={onAccount}
         />
       </SettingsGroup>
 

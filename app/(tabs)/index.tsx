@@ -11,13 +11,14 @@ export default function HomeScreen() {
       <Screen scroll>
         <HomeContent
           onProfilePress={() => router.push('/(tabs)/personality')}
-          onLogMood={() => router.push('/(tabs)/log')}
+          onNotificationsPress={() => router.push('/notifications')}
+          onLogMood={() => router.push('/log')}
           onSeeEvidence={() => router.push('/(tabs)/analytics')}
           onSeeAll={() => router.push('/(tabs)/analytics')}
           onExpensePress={(id) => router.push(`/expense/${id}`)}
         />
       </Screen>
-      <Fab onPress={() => router.push('/(tabs)/log')} />
+      <Fab onPress={() => router.push('/log')} />
     </View>
   );
 }

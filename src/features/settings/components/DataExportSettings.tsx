@@ -1,3 +1,4 @@
+import * as FileSystem from 'expo-file-system/legacy';
 import { Alert, Share, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
@@ -18,14 +19,28 @@ export function DataExportSettings() {
       Alert.alert('Nothing to export', 'Log an expense first, then try again.');
       return;
     }
+
     const csv = expensesToCsv(expenses);
+    const cacheDir = FileSystem.cacheDirectory;
+    if (!cacheDir) {
+      Alert.alert('Export failed', 'File storage is unavailable on this device.');
+      return;
+    }
+
+    const fileName = `pulse-expenses-${new Date().toISOString().slice(0, 10)}.csv`;
+    const fileUri = `${cacheDir}${fileName}`;
+
     try {
-      await Share.share({
-        message: csv,
-        title: 'Pulse expenses.csv',
+      await FileSystem.writeAsStringAsync(fileUri, csv, {
+        encoding: FileSystem.EncodingType.UTF8,
       });
+      await Share.share({
+        url: fileUri,
+        title: fileName,
+      });
+      showToast('Export ready to share');
     } catch {
-      Alert.alert('Export failed', 'Could not open the share sheet.');
+      Alert.alert('Export failed', 'Could not create or share the CSV file.');
     }
   };
 
@@ -51,8 +66,8 @@ export function DataExportSettings() {
   return (
     <View className="gap-4">
       <Text className="text-sm text-text-muted">
-        Export {expenses.length} expense{expenses.length === 1 ? '' : 's'} as CSV, or clear local
-        data.
+        Export {expenses.length} expense{expenses.length === 1 ? '' : 's'} as a CSV file, or clear
+        local data.
       </Text>
       <PrimaryButton label="Export CSV" onPress={() => void onExport()} />
       <SecondaryButton label="Clear all data" onPress={onClear} />

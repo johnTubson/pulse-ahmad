@@ -13,3 +13,10 @@ export function firstNameFrom(identity: string | null | undefined): string {
 
   return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
 }
+
+export function displayHeaderName(displayName: string | null, email: string | null): string {
+  if (displayName?.trim()) return displayName.trim();
+  const first = firstNameFrom(email);
+  if (first === 'there') return 'You';
+  return `${first}. ${first.charAt(0)}`;
+}

@@ -18,8 +18,9 @@ import {
   formatDeltaPercent,
   percentChange,
   previousPeriodRange,
-  resolvePeriodRange,
+  resolvePeriodRangeForExpenses,
   sumExpenses,
+  vsPriorLabel,
   type AnalyticsPeriod,
 } from '@/lib/analytics/period';
 import { useExpenseStore } from '@/stores/expenseStore';
@@ -50,14 +51,15 @@ export default function CategoryDrillScreen() {
   const expenses = useExpenseStore((s) => s.expenses);
   const moods = useMoodStore((s) => s.moods);
   const [period, setPeriod] = useState<AnalyticsPeriod>('month');
-  const range = resolvePeriodRange(period);
+  const range = resolvePeriodRangeForExpenses(period, expenses);
   const moodByExpense = moodByExpenseMap(moods);
 
   const allInRange = filterExpensesByRange(expenses, range);
   const inRange = allInRange.filter((e) => e.categoryId === categoryId);
-  const previous = filterExpensesByRange(expenses, previousPeriodRange(range)).filter(
-    (e) => e.categoryId === categoryId,
-  );
+  const previousRange = previousPeriodRange(range, period);
+  const previous = previousRange
+    ? filterExpensesByRange(expenses, previousRange).filter((e) => e.categoryId === categoryId)
+    : [];
   const total = sumExpenses(inRange);
   const prevTotal = sumExpenses(previous);
   const dayCount = daysInRange(range);
@@ -80,15 +82,23 @@ export default function CategoryDrillScreen() {
     <View className="flex-1">
       <Stack.Screen options={{ title, headerBackTitle: 'Analytics' }} />
       <Screen scroll>
-        <PeriodChipRow value={period} onChange={setPeriod} className="mb-4" />
+        <PeriodChipRow value={period} onChange={setPeriod} className="mb-2" />
+        <Text className="mb-4 text-sm font-medium text-text">{range.label}</Text>
 
         <TotalSpendCard
-          title={`Total Spent · ${title}`}
+          title="Total Spent"
           total={total}
           metrics={[
-            { label: 'vs prior', value: formatDeltaPercent(percentChange(total, prevTotal)) },
+            ...(previousRange
+              ? [
+                  {
+                    label: vsPriorLabel(period),
+                    value: formatDeltaPercent(percentChange(total, prevTotal)),
+                  },
+                ]
+              : []),
             { label: 'Avg/day', value: formatAvgPerDay(total, dayCount) },
-            { label: 'Logs', value: String(inRange.length) },
+            { label: 'Expenses log', value: String(inRange.length) },
           ]}
           className="mb-5"
         />
@@ -153,7 +163,7 @@ export default function CategoryDrillScreen() {
           </Text>
         </View>
       </Screen>
-      <Fab onPress={() => router.push('/(tabs)/log')} />
+      <Fab onPress={() => router.push('/log')} />
     </View>
   );
 }

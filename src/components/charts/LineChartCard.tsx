@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 
 import { useChartWidth } from '@/components/charts/useChartWidth';
+import { MOOD_META, MOOD_VALUES } from '@/constants/mood';
 import { palette } from '@/constants/theme';
 import { cn } from '@/utils/cn';
 
@@ -16,25 +17,23 @@ type LineChartCardProps = {
   rangeStartLabel?: string;
   /** Right edge of the selected date range (secondary x-axis row). */
   rangeEndLabel?: string;
+  summary?: string;
   className?: string;
 };
 
 const CHART_HEIGHT = 180;
-/** Inset so the line + edge day labels aren’t clipped by overflow-hidden. */
+/** Inset so the line + edge day labels aren't clipped by overflow-hidden. */
 const AXIS_GUTTER = 16;
 
 export function LineChartCard({
   data,
   rangeStartLabel,
   rangeEndLabel,
+  summary,
   className,
 }: LineChartCardProps) {
   const { width, onLayout } = useChartWidth();
   const showRangeEnds = Boolean(rangeStartLabel || rangeEndLabel);
-  // Last point is at initialSpacing + (n - 1) * spacing. Divide by n - 1 so
-  // that lands on width - endSpacing (right gutter). gifted-charts still adds
-  // one extra spacing into totalWidth after the last point; overflow-hidden
-  // clips that empty tail.
   const spacing =
     width > 0 && data.length > 1 ? (width - AXIS_GUTTER * 2) / (data.length - 1) : AXIS_GUTTER;
 
@@ -86,11 +85,19 @@ export function LineChartCard({
                 <Text className="text-[10px] text-text-muted">{rangeEndLabel}</Text>
               </View>
             ) : null}
+            <View className="mt-2 flex-row">
+              {MOOD_VALUES.map((mood) => (
+                <View key={mood} className="flex-1 items-center">
+                  <Text className="text-base">{MOOD_META[mood].emoji}</Text>
+                </View>
+              ))}
+            </View>
           </>
         ) : (
           <View style={{ height: CHART_HEIGHT }} />
         )}
       </View>
+      {summary ? <Text className="mt-3 px-1 text-center text-sm text-text">{summary}</Text> : null}
     </View>
   );
 }

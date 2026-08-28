@@ -1,3 +1,5 @@
+import type { CategoryId } from '@/types/finance';
+
 export type RecognizeResult = {
   text: string;
   /** Structured amount when the provider returns one; otherwise null for parseAmount. */
@@ -7,6 +9,8 @@ export type RecognizeResult = {
   note: string | null;
   /** ISO or freeform date string when the provider returns one; heuristics fill gaps. */
   date: string | null;
+  /** Suggested spending category when the provider returns one. */
+  categoryId: CategoryId | null;
 };
 
 export class OcrError extends Error {
@@ -22,7 +26,7 @@ export class OcrError extends Error {
 export const EMPTY_OCR_TEXT = 'No text found on this receipt.';
 
 export function textOnlyResult(text: string): RecognizeResult {
-  return { text, amount: null, merchant: null, note: null, date: null };
+  return { text, amount: null, merchant: null, note: null, date: null, categoryId: null };
 }
 
 export function requireApiKey(value: string, missingMessage: string): string {
