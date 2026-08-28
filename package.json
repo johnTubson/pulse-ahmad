@@ -81,6 +81,7 @@
     "tokens:figma": "npx tsx scripts/exportFigmaTokens.ts",
     "tokens:remap": "npx tsx scripts/exportFigmaTokens.ts --from-flat design-tokens/tokens.flat.json --write",
     "seed": "npx tsx scripts/seedData.ts",
+    "snack:create": "create-snack",
     "prepare": "husky"
   },
   "lint-staged": {
