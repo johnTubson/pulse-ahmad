@@ -1,8 +1,15 @@
-import { SymbolView } from 'expo-symbols';
+import { BellRingingIcon } from 'phosphor-react-native/src/icons/BellRinging';
+import { CaretLeftIcon } from 'phosphor-react-native/src/icons/CaretLeft';
+import { ChartPieIcon } from 'phosphor-react-native/src/icons/ChartPie';
+import { CurrencyDollarIcon } from 'phosphor-react-native/src/icons/CurrencyDollar';
+import { ExportIcon } from 'phosphor-react-native/src/icons/Export';
+import { ShieldIcon } from 'phosphor-react-native/src/icons/Shield';
+import { SquaresFourIcon } from 'phosphor-react-native/src/icons/SquaresFour';
 import { useState } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
 import { AvatarHeader } from '@/components/ui/AvatarHeader';
+import { Icon } from '@/components/ui/Icon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SettingsGroup } from '@/components/ui/SettingsGroup';
 import { SettingsRow, SignOutRow } from '@/components/ui/SettingsRow';
@@ -87,11 +94,7 @@ export function SettingsHub({
         className="mb-3 h-10 w-10 items-center justify-center rounded-full bg-grey-100 active:opacity-70"
         onPress={onBack}
       >
-        <SymbolView
-          name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-          tintColor={palette.text}
-          size={18}
-        />
+        <Icon icon={CaretLeftIcon} color={palette.text} size={18} />
       </Pressable>
 
       <AvatarHeader
@@ -126,36 +129,12 @@ export function SettingsHub({
       <Text className="mb-4 mt-5 text-3xl font-bold text-text">Settings</Text>
 
       <SettingsGroup className="mb-4">
-        <SettingsRow
-          label="Currency"
-          icon={{ ios: 'dollarsign', android: 'attach_money', web: 'attach_money' }}
-          onPress={onCurrency}
-        />
-        <SettingsRow
-          label="Categories"
-          icon={{ ios: 'square.grid.2x2', android: 'grid_view', web: 'grid_view' }}
-          onPress={onCategories}
-        />
-        <SettingsRow
-          label="Notification"
-          icon={{ ios: 'app.badge', android: 'notifications', web: 'notifications' }}
-          onPress={onNotifications}
-        />
-        <SettingsRow
-          label="Set budget"
-          icon={{ ios: 'chart.pie', android: 'pie_chart', web: 'pie_chart' }}
-          onPress={onBudget}
-        />
-        <SettingsRow
-          label="Data export"
-          icon={{ ios: 'square.and.arrow.up', android: 'upload', web: 'upload' }}
-          onPress={onDataExport}
-        />
-        <SettingsRow
-          label="Account settings"
-          icon={{ ios: 'shield', android: 'shield', web: 'shield' }}
-          onPress={onAccount}
-        />
+        <SettingsRow label="Currency" icon={CurrencyDollarIcon} onPress={onCurrency} />
+        <SettingsRow label="Categories" icon={SquaresFourIcon} onPress={onCategories} />
+        <SettingsRow label="Notification" icon={BellRingingIcon} onPress={onNotifications} />
+        <SettingsRow label="Set budget" icon={ChartPieIcon} onPress={onBudget} />
+        <SettingsRow label="Data export" icon={ExportIcon} onPress={onDataExport} />
+        <SettingsRow label="Account settings" icon={ShieldIcon} onPress={onAccount} />
       </SettingsGroup>
 
       <SignOutRow onPress={onSignOut} loading={signingOut} />

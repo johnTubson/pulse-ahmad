@@ -19,7 +19,6 @@ export type VisionAnnotateResponse = {
   error?: { code?: number; message?: string };
 };
 
-/** Pulls the full OCR string from a Vision annotate response body. */
 export function extractTextFromVisionResponse(body: VisionAnnotateResponse): string {
   if (body.error?.message) {
     throw new OcrError(body.error.message, 'api');
@@ -42,7 +41,6 @@ export function extractTextFromVisionResponse(body: VisionAnnotateResponse): str
   throw new OcrError(EMPTY_OCR_TEXT, 'empty');
 }
 
-/** Google Cloud Vision DOCUMENT_TEXT_DETECTION on raw base64 JPEG/PNG. */
 export async function recognizeWithGoogleVision(base64Image: string): Promise<RecognizeResult> {
   const apiKey = requireApiKey(
     env.ocrApiKey,

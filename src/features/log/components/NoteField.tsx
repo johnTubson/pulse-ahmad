@@ -1,6 +1,7 @@
-import { SymbolView } from 'expo-symbols';
+import { NoteIcon } from 'phosphor-react-native/src/icons/Note';
 import { TextInput, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 import { cn } from '@/utils/cn';
 
@@ -18,11 +19,7 @@ export function NoteField({ value, onChangeText, className }: NoteFieldProps) {
         className,
       )}
     >
-      <SymbolView
-        name={{ ios: 'note.text', android: 'sticky_note_2', web: 'sticky_note_2' }}
-        tintColor={palette.textMuted}
-        size={18}
-      />
+      <Icon icon={NoteIcon} color={palette.textMuted} size={18} />
       <TextInput
         accessibilityLabel="Note"
         className="flex-1 py-3 text-base text-text"

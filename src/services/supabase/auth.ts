@@ -33,7 +33,6 @@ export async function getCurrentSession(): Promise<Session | null> {
   return data.session;
 }
 
-/** Subscribe to auth changes (sign in/out, token refresh). Returns an unsubscribe handle. */
 export function onAuthStateChange(callback: (session: Session | null) => void): {
   unsubscribe: () => void;
 } {

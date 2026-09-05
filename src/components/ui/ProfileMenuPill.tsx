@@ -1,6 +1,8 @@
-import { SymbolView } from 'expo-symbols';
+import { ListIcon } from 'phosphor-react-native/src/icons/List';
+import { UserCircleIcon } from 'phosphor-react-native/src/icons/UserCircle';
 import { Pressable, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 import { cn } from '@/utils/cn';
 
@@ -20,17 +22,9 @@ export function ProfileMenuPill({ onPress, className }: ProfileMenuPillProps) {
       )}
       onPress={onPress}
     >
-      <SymbolView
-        name={{ ios: 'person.crop.circle', android: 'person', web: 'person' }}
-        tintColor={palette.textMuted}
-        size={20}
-      />
+      <Icon icon={UserCircleIcon} color={palette.textMuted} size={20} />
       <View className="h-4 w-px bg-grey-300" />
-      <SymbolView
-        name={{ ios: 'line.3.horizontal', android: 'menu', web: 'menu' }}
-        tintColor={palette.textMuted}
-        size={18}
-      />
+      <Icon icon={ListIcon} color={palette.textMuted} size={18} />
     </Pressable>
   );
 }

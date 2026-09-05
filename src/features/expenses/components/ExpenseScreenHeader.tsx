@@ -1,7 +1,10 @@
 import { router } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
+import { CaretLeftIcon } from 'phosphor-react-native/src/icons/CaretLeft';
+import { CheckCircleIcon } from 'phosphor-react-native/src/icons/CheckCircle';
+import { ScanIcon } from 'phosphor-react-native/src/icons/Scan';
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 
 type ExpenseScreenHeaderProps = {
@@ -27,11 +30,7 @@ export function ExpenseScreenHeader({
         className="z-10 h-10 w-10 items-center justify-center rounded-full bg-grey-100 active:opacity-70"
         onPress={onBack}
       >
-        <SymbolView
-          name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-          tintColor={palette.text}
-          size={18}
-        />
+        <Icon icon={CaretLeftIcon} color={palette.text} size={18} />
       </Pressable>
 
       {title ? (
@@ -46,11 +45,7 @@ export function ExpenseScreenHeader({
       {onScan ? (
         scanned ? (
           <View className="z-10 flex-row items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-2">
-            <SymbolView
-              name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
-              tintColor={palette.primary}
-              size={14}
-            />
+            <Icon icon={CheckCircleIcon} color={palette.primary} size={14} weight="fill" />
             <Text className="text-sm font-semibold text-primary">Scanned</Text>
           </View>
         ) : (
@@ -60,11 +55,7 @@ export function ExpenseScreenHeader({
             className="z-10 flex-row items-center gap-1.5 rounded-full border border-primary px-3.5 py-2 active:opacity-70"
             onPress={onScan}
           >
-            <SymbolView
-              name={{ ios: 'viewfinder', android: 'qr_code_scanner', web: 'qr_code_scanner' }}
-              tintColor={palette.primary}
-              size={14}
-            />
+            <Icon icon={ScanIcon} color={palette.primary} size={14} />
             <Text className="text-sm font-semibold text-primary">Scan</Text>
           </Pressable>
         )

@@ -1,6 +1,7 @@
-import { SymbolView } from 'expo-symbols';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { categoryLabels, palette } from '@/constants/theme';
 import { formatMoney } from '@/lib/currency/formatMoney';
 import type { CategoryId } from '@/types/finance';
@@ -50,11 +51,7 @@ export function CategoryLegend({ rows, onPressCategory, className }: CategoryLeg
             <Text className="text-sm tabular-nums text-text-muted">
               {formatMoney(row.total)} ({Math.round(row.percentage)}%)
             </Text>
-            <SymbolView
-              name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
-              tintColor={palette.textMuted}
-              size={14}
-            />
+            <Icon icon={CaretRightIcon} color={palette.textMuted} size={14} />
           </Pressable>
         );
       })}

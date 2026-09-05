@@ -18,7 +18,7 @@ export const DEFAULT_OPENROUTER_OCR_MODEL = 'qwen/qwen3.7-flash';
 
 /**
  * Cheap vision models tried after the primary when OpenRouter returns a rate limit.
- * Spread across Google / OpenAI / Mistral so a single-provider quota is less likely to block scans.
+ * Spread across Qwen / Google / Mistral so a single-provider quota is less likely to block scans.
  */
 export const DEFAULT_OPENROUTER_FALLBACK_MODELS = [
   'qwen/qwen3.5-flash-02-23', // ~$0.06 / $0.26 per 1M

@@ -1,6 +1,8 @@
-import { SymbolView } from 'expo-symbols';
+import { GearSixIcon } from 'phosphor-react-native/src/icons/GearSix';
+import { PencilSimpleIcon } from 'phosphor-react-native/src/icons/PencilSimple';
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { NotificationBellButton } from '@/components/ui/NotificationBellButton';
 import { palette } from '@/constants/theme';
 import { cn } from '@/utils/cn';
@@ -51,13 +53,9 @@ export function AvatarHeader({
           className="h-10 w-10 items-center justify-center rounded-full bg-grey-100 active:opacity-70"
           onPress={onActionPress}
         >
-          <SymbolView
-            name={
-              action === 'gear'
-                ? { ios: 'gearshape', android: 'settings', web: 'settings' }
-                : { ios: 'pencil', android: 'edit', web: 'edit' }
-            }
-            tintColor={palette.textMuted}
+          <Icon
+            icon={action === 'gear' ? GearSixIcon : PencilSimpleIcon}
+            color={palette.textMuted}
             size={18}
           />
         </Pressable>

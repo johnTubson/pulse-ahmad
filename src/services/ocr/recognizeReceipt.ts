@@ -5,7 +5,6 @@ import { recognizeWithOcrSpace } from '@/services/ocr/providers/ocrSpace';
 import { recognizeWithOpenRouter } from '@/services/ocr/providers/openRouter';
 import type { RecognizeResult } from '@/services/ocr/types';
 
-/** Dispatches to the provider selected by `EXPO_PUBLIC_OCR_PROVIDER` (default: llm). */
 export async function recognizeReceipt(base64Image: string): Promise<RecognizeResult> {
   switch (env.ocrProvider) {
     case 'ocrspace':

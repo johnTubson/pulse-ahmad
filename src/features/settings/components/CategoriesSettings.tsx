@@ -1,5 +1,6 @@
 import { Switch, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { CATEGORY_META } from '@/constants/categories';
 import { palette } from '@/constants/theme';
 import { useUiStore } from '@/stores/uiStore';
@@ -23,7 +24,7 @@ export function CategoriesSettings() {
             <View key={id}>
               {index > 0 ? <View className="ml-14 h-px bg-border" /> : null}
               <View className="flex-row items-center gap-3 px-4 py-3.5">
-                <Text className="text-xl">{meta.emoji}</Text>
+                <Icon icon={meta.icon} color={palette.text} size={22} />
                 <Text className="flex-1 text-base font-medium text-text">{meta.label}</Text>
                 <Switch
                   value={!hidden}

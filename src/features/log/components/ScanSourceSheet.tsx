@@ -1,11 +1,12 @@
-import { SymbolView } from 'expo-symbols';
+import { CameraIcon } from 'phosphor-react-native/src/icons/Camera';
+import { ImagesIcon } from 'phosphor-react-native/src/icons/Images';
+import { ScanIcon } from 'phosphor-react-native/src/icons/Scan';
 import { Modal, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Icon, type AppIcon } from '@/components/ui/Icon';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { palette } from '@/constants/theme';
-
-type SymbolName = React.ComponentProps<typeof SymbolView>['name'];
 
 type ScanSourceSheetProps = {
   visible: boolean;
@@ -16,7 +17,7 @@ type ScanSourceSheetProps = {
 };
 
 type MenuRowProps = {
-  icon: SymbolName;
+  icon: AppIcon;
   title: string;
   subtitle: string;
   featured?: boolean;
@@ -38,7 +39,7 @@ function MenuRow({ icon, title, subtitle, featured = false, onPress }: MenuRowPr
             : 'h-11 w-11 items-center justify-center rounded-xl bg-grey-100'
         }
       >
-        <SymbolView name={icon} tintColor={featured ? palette.primary : palette.text} size={20} />
+        <Icon icon={icon} color={featured ? palette.primary : palette.text} size={20} />
       </View>
       <View className="flex-1">
         <Text className="text-base font-semibold text-text">{title}</Text>
@@ -81,7 +82,7 @@ export function ScanSourceSheet({
           <View className="mb-3 overflow-hidden rounded-2xl bg-grey-100">
             <MenuRow
               featured
-              icon={{ ios: 'viewfinder', android: 'qr_code_scanner', web: 'qr_code_scanner' }}
+              icon={ScanIcon}
               title="Scan receipt"
               subtitle="Auto-detect the total with the camera"
               onPress={onScanReceipt}
@@ -90,18 +91,14 @@ export function ScanSourceSheet({
 
           <View className="mb-5 overflow-hidden rounded-2xl bg-grey-100">
             <MenuRow
-              icon={{ ios: 'camera.fill', android: 'photo_camera', web: 'photo_camera' }}
+              icon={CameraIcon}
               title="Take photo"
               subtitle="Capture a receipt to attach"
               onPress={onTakePhoto}
             />
             <View className="ml-[68px] h-px bg-grey-200" />
             <MenuRow
-              icon={{
-                ios: 'photo.on.rectangle',
-                android: 'photo_library',
-                web: 'photo_library',
-              }}
+              icon={ImagesIcon}
               title="Choose from library"
               subtitle="Pick an existing receipt photo"
               onPress={onChooseLibrary}

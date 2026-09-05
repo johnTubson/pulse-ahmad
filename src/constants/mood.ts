@@ -1,6 +1,5 @@
 import type { MoodValue } from '@/types/finance';
 
-/** Product §3.2.1 / LOG-10 labels: Low · Meh · Okay · Good · Great */
 export const MOOD_META: Record<MoodValue, { emoji: string; label: string }> = {
   1: { emoji: '😔', label: 'Low' },
   2: { emoji: '😐', label: 'Meh' },

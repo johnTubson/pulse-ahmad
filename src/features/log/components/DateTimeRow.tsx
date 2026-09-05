@@ -1,8 +1,10 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { SymbolView } from 'expo-symbols';
+import { CalendarBlankIcon } from 'phosphor-react-native/src/icons/CalendarBlank';
+import { CaretDownIcon } from 'phosphor-react-native/src/icons/CaretDown';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 import { formatTransactionDate } from '@/lib/date/format';
 import { cn } from '@/utils/cn';
@@ -47,19 +49,11 @@ export function DateTimeRow({ value, onChange, className }: DateTimeRowProps) {
         className="min-h-[48px] flex-row items-center gap-2.5 rounded-xl bg-grey-100 px-3.5 active:opacity-70"
         onPress={openPicker}
       >
-        <SymbolView
-          name={{ ios: 'calendar', android: 'calendar_today', web: 'calendar_today' }}
-          tintColor={palette.textMuted}
-          size={18}
-        />
+        <Icon icon={CalendarBlankIcon} color={palette.textMuted} size={18} />
         <Text className="flex-1 text-base text-text-muted">
           {formatTransactionDate(value.toISOString())}
         </Text>
-        <SymbolView
-          name={{ ios: 'chevron.down', android: 'expand_more', web: 'expand_more' }}
-          tintColor={palette.textMuted}
-          size={16}
-        />
+        <Icon icon={CaretDownIcon} color={palette.textMuted} size={16} />
       </Pressable>
 
       {Platform.OS === 'ios' && iosOpen ? (

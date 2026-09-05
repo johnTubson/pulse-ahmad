@@ -1,6 +1,9 @@
 import { Tabs } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
+import { ChartBarIcon } from 'phosphor-react-native/src/icons/ChartBar';
+import { HouseIcon } from 'phosphor-react-native/src/icons/House';
+import { UserCircleIcon } from 'phosphor-react-native/src/icons/UserCircle';
 
+import { Icon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 
 export default function TabLayout() {
@@ -20,11 +23,12 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'house.fill', android: 'home', web: 'home' }}
-              tintColor={color}
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              icon={HouseIcon}
+              color={String(color)}
               size={24}
+              weight={focused ? 'fill' : 'regular'}
             />
           ),
         }}
@@ -33,11 +37,12 @@ export default function TabLayout() {
         name="analytics"
         options={{
           title: 'Trends',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'chart.bar.fill', android: 'bar_chart', web: 'bar_chart' }}
-              tintColor={color}
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              icon={ChartBarIcon}
+              color={String(color)}
               size={24}
+              weight={focused ? 'fill' : 'regular'}
             />
           ),
         }}
@@ -46,11 +51,12 @@ export default function TabLayout() {
         name="personality"
         options={{
           title: 'Personality',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'person.crop.circle.fill', android: 'person', web: 'person' }}
-              tintColor={color}
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              icon={UserCircleIcon}
+              color={String(color)}
               size={24}
+              weight={focused ? 'fill' : 'regular'}
             />
           ),
         }}

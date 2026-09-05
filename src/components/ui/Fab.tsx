@@ -1,5 +1,7 @@
-import { Pressable, Text } from 'react-native';
+import { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
+import { Pressable } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/utils/cn';
 import { hapticMedium } from '@/utils/haptics';
 
@@ -23,7 +25,7 @@ export function Fab({ onPress, accessibilityLabel = 'Log expense', className }: 
         onPress();
       }}
     >
-      <Text className="text-3xl font-light leading-8 text-white">+</Text>
+      <Icon icon={PlusIcon} color="#fff" size={28} weight="bold" />
     </Pressable>
   );
 }

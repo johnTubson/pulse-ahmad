@@ -1,8 +1,12 @@
 import { CameraView } from 'expo-camera';
-import { SymbolView } from 'expo-symbols';
+import { ImagesIcon } from 'phosphor-react-native/src/icons/Images';
+import { LightningIcon } from 'phosphor-react-native/src/icons/Lightning';
+import { LightningSlashIcon } from 'phosphor-react-native/src/icons/LightningSlash';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Icon } from '@/components/ui/Icon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { palette } from '@/constants/theme';
@@ -73,11 +77,7 @@ export function ScannerScreen() {
           className="h-10 w-10 items-center justify-center rounded-xl bg-grey-100 active:opacity-70"
           onPress={close}
         >
-          <SymbolView
-            name={{ ios: 'xmark', android: 'close', web: 'close' }}
-            tintColor={palette.text}
-            size={16}
-          />
+          <Icon icon={XIcon} color={palette.text} size={16} />
         </Pressable>
 
         {headerLabel ? (
@@ -93,14 +93,11 @@ export function ScannerScreen() {
           onPress={toggleFlash}
           disabled={!showLiveCamera}
         >
-          <SymbolView
-            name={
-              flash === 'off'
-                ? { ios: 'bolt.slash.fill', android: 'flash_off', web: 'flash_off' }
-                : { ios: 'bolt.fill', android: 'flash_on', web: 'flash_on' }
-            }
-            tintColor={palette.text}
+          <Icon
+            icon={flash === 'off' ? LightningSlashIcon : LightningIcon}
+            color={palette.text}
             size={16}
+            weight="fill"
           />
         </Pressable>
       </View>
@@ -155,15 +152,7 @@ export function ScannerScreen() {
           onPress={() => void openLibrary()}
           disabled={libraryDisabled}
         >
-          <SymbolView
-            name={{
-              ios: 'photo.on.rectangle',
-              android: 'photo_library',
-              web: 'photo_library',
-            }}
-            tintColor={palette.text}
-            size={20}
-          />
+          <Icon icon={ImagesIcon} color={palette.text} size={20} />
         </Pressable>
 
         <View className="flex-1 items-center">

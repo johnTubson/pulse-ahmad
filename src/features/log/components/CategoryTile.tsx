@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { CATEGORY_META } from '@/constants/categories';
+import { palette } from '@/constants/theme';
 import type { CategoryId } from '@/types/finance';
 import { cn } from '@/utils/cn';
 import { hapticLight } from '@/utils/haptics';
@@ -29,7 +31,7 @@ export function CategoryTile({ categoryId, selected, onPress }: CategoryTileProp
       }}
     >
       <View className="mb-2 flex-row items-start justify-between">
-        <Text className="text-lg">{meta.emoji}</Text>
+        <Icon icon={meta.icon} color={palette.text} size={20} />
         <View
           className={cn(
             'h-4 w-4 items-center justify-center rounded-full border',

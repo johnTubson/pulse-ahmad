@@ -1,6 +1,7 @@
-import { SymbolView } from 'expo-symbols';
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
 import { Pressable, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 import { useNotificationInboxStore } from '@/stores/notificationInboxStore';
 
@@ -19,11 +20,7 @@ export function NotificationBellButton({ onPress, className }: NotificationBellB
       className={`relative h-10 w-10 items-center justify-center rounded-full bg-grey-100 active:opacity-70 ${className ?? ''}`}
       onPress={onPress}
     >
-      <SymbolView
-        name={{ ios: 'bell', android: 'notifications', web: 'notifications' }}
-        tintColor={palette.textMuted}
-        size={18}
-      />
+      <Icon icon={BellIcon} color={palette.textMuted} size={18} />
       {unread > 0 ? (
         <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border border-surface bg-primary" />
       ) : null}

@@ -1,7 +1,8 @@
-import { SymbolView } from 'expo-symbols';
+import { XIcon } from 'phosphor-react-native/src/icons/X';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Icon } from '@/components/ui/Icon';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { palette } from '@/constants/theme';
 import { AmountDisplay } from '@/features/log/components/AmountDisplay';
@@ -54,11 +55,7 @@ function QuickLogSheet() {
                   className="absolute right-0 h-9 w-9 items-center justify-center rounded-full bg-grey-100 active:opacity-70"
                   onPress={form.dismiss}
                 >
-                  <SymbolView
-                    name={{ ios: 'xmark', android: 'close', web: 'close' }}
-                    tintColor={palette.text}
-                    size={16}
-                  />
+                  <Icon icon={XIcon} color={palette.text} size={16} />
                 </Pressable>
               </View>
 

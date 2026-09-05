@@ -1,15 +1,15 @@
-import { SymbolView } from 'expo-symbols';
-import type { ComponentProps, ReactNode } from 'react';
+import { CaretRightIcon } from 'phosphor-react-native/src/icons/CaretRight';
+import { SignOutIcon } from 'phosphor-react-native/src/icons/SignOut';
+import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon, type AppIcon } from '@/components/ui/Icon';
 import { palette } from '@/constants/theme';
 import { cn } from '@/utils/cn';
 
-type SymbolName = ComponentProps<typeof SymbolView>['name'];
-
 type SettingsRowProps = {
   label: string;
-  icon: SymbolName;
+  icon: AppIcon;
   onPress: () => void;
   showChevron?: boolean;
   trailing?: ReactNode;
@@ -32,17 +32,11 @@ export function SettingsRow({
       onPress={onPress}
     >
       <View className="h-9 w-9 items-center justify-center rounded-xl bg-grey-100">
-        <SymbolView name={icon} tintColor={palette.text} size={18} />
+        <Icon icon={icon} color={palette.text} size={18} />
       </View>
       <Text className="flex-1 text-base font-medium text-text">{label}</Text>
       {trailing}
-      {showChevron ? (
-        <SymbolView
-          name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
-          tintColor={palette.textMuted}
-          size={16}
-        />
-      ) : null}
+      {showChevron ? <Icon icon={CaretRightIcon} color={palette.textMuted} size={16} /> : null}
     </Pressable>
   );
 }
@@ -64,11 +58,7 @@ export function SignOutRow({ onPress, loading }: SignOutRowProps) {
       <Text className="text-base font-medium text-text">
         {loading ? 'Signing out…' : 'Sign out'}
       </Text>
-      <SymbolView
-        name={{ ios: 'rectangle.portrait.and.arrow.right', android: 'logout', web: 'logout' }}
-        tintColor={palette.textMuted}
-        size={20}
-      />
+      <Icon icon={SignOutIcon} color={palette.textMuted} size={20} />
     </Pressable>
   );
 }
