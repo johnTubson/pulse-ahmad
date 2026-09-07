@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Pulse",
-    "slug": "pulse",
+    "slug": "pulse-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.johntubson.pulse"
+      "bundleIdentifier": "com.johntubson.pulse",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.johntubson.pulse",
@@ -64,7 +67,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "c2b6d532-7866-427b-a823-0d0b808acb94"
+        "projectId": "d39fcd35-d6b2-402a-bdae-8c85ccd8eec3"
       }
     }
   }
