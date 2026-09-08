@@ -116,8 +116,8 @@ export default function SignUpScreen() {
 
       <View className="mt-6 flex-row justify-center">
         <Text className="text-sm text-text-muted">Already have an account? </Text>
-        <Link href="/(auth)/sign-in" className="text-sm font-semibold text-primary">
-          Sign in
+        <Link href="/(auth)/sign-in">
+          <Text className="text-sm font-semibold text-primary">Sign in</Text>
         </Link>
       </View>
 

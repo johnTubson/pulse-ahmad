@@ -2,13 +2,14 @@
 
 Apply in order via **SQL Editor** in the [Supabase Dashboard](https://supabase.com/dashboard).
 
-| #   | File                                           | Purpose                                                        |
-| --- | ---------------------------------------------- | -------------------------------------------------------------- |
-| 1   | `migrations/001_receipts_storage_bucket.sql`   | Private `receipts` storage bucket + RLS                        |
-| 2   | `migrations/002_initial_schema.sql`            | Tables, triggers, RLS for core app data                        |
-| 3   | `migrations/003_category_slug_ids.sql`         | Category `slug` column; ULID `id`; restore expense/budget FKs  |
-| 4   | `migrations/004_fix_category_seed_trigger.sql` | Harden signup `seed_default_categories` (fixes createUser 500) |
-| 5   | `migrations/005_fix_signup_trigger.sql`        | RLS-safe signup trigger + seed bypass RPC                      |
+| #   | File                                               | Purpose                                                        |
+| --- | -------------------------------------------------- | -------------------------------------------------------------- |
+| 1   | `migrations/001_receipts_storage_bucket.sql`       | Private `receipts` storage bucket + RLS                        |
+| 2   | `migrations/002_initial_schema.sql`                | Tables, triggers, RLS for core app data                        |
+| 3   | `migrations/003_category_slug_ids.sql`             | Category `slug` column; ULID `id`; restore expense/budget FKs  |
+| 4   | `migrations/004_fix_category_seed_trigger.sql`     | Harden signup `seed_default_categories` (fixes createUser 500) |
+| 5   | `migrations/005_fix_signup_trigger.sql`            | RLS-safe signup trigger + seed bypass RPC                      |
+| 6   | `migrations/006_fix_generate_ulid_search_path.sql` | Fix ULID `gen_random_bytes` under signup `search_path`         |
 
 ## Category columns
 

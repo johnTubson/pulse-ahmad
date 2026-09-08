@@ -1,13 +1,14 @@
 -- Pulse core schema: profiles, categories, expenses, moods, budgets, personality
 -- Entity primary keys use ULID (TEXT); auth.users ids remain UUID.
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
 
 -- Server-side ULID generator (pgulid, Apache 2.0 — https://github.com/geckoboard/pgulid)
 CREATE OR REPLACE FUNCTION public.generate_ulid()
 RETURNS TEXT
 LANGUAGE plpgsql
 VOLATILE
+SET search_path = public, extensions
 AS $$
 DECLARE
   encoding BYTEA = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
@@ -23,7 +24,7 @@ BEGIN
   timestamp = SET_BYTE(timestamp, 3, (unix_time >> 16)::BIT(8)::INTEGER);
   timestamp = SET_BYTE(timestamp, 4, (unix_time >> 8)::BIT(8)::INTEGER);
   timestamp = SET_BYTE(timestamp, 5, unix_time::BIT(8)::INTEGER);
-  ulid = timestamp || gen_random_bytes(10);
+  ulid = timestamp || extensions.gen_random_bytes(10);
   output = output || CHR(GET_BYTE(encoding, (GET_BYTE(ulid, 0) & 224) >> 5));
   output = output || CHR(GET_BYTE(encoding, (GET_BYTE(ulid, 0) & 31)));
   output = output || CHR(GET_BYTE(encoding, (GET_BYTE(ulid, 1) & 248) >> 3));

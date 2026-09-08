@@ -73,7 +73,7 @@ Dataset (re-seed anytime): ~60 days of patterned expenses + moods (stress/delive
 
 Prerequisites:
 
-1. Apply migrations `001`–`005` (see [`supabase/README.md`](./supabase/README.md)).
+1. Apply migrations `001`–`006` (see [`supabase/README.md`](./supabase/README.md)).
 2. Put `SUPABASE_SERVICE_ROLE_KEY` in `.env` (Dashboard → Settings → API → `service_role`).
 3. Run:
 
@@ -93,6 +93,7 @@ Receipt OCR: scan a new receipt in-app (seed has no images).
    - `supabase/migrations/003_category_slug_ids.sql`
    - `supabase/migrations/004_fix_category_seed_trigger.sql`
    - `supabase/migrations/005_fix_signup_trigger.sql`
+   - `supabase/migrations/006_fix_generate_ulid_search_path.sql`
 
 ### 4. Run the app
 

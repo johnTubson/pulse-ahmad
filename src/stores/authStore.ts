@@ -10,6 +10,7 @@ import {
   signUp as signUpService,
 } from '@/services/supabase/auth';
 import { isSupabaseConfigured } from '@/services/supabase/client';
+import { toUserErrorMessage } from '@/utils/errorMessage';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -61,9 +62,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     try {
       await action();
     } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
-      });
+      set({ error: toUserErrorMessage(error) });
       throw error;
     }
   };
@@ -107,9 +106,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         }
         return { needsEmailConfirmation: session == null };
       } catch (error) {
-        set({
-          error: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
-        });
+        set({ error: toUserErrorMessage(error) });
         throw error;
       }
     },
