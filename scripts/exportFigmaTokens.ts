@@ -31,6 +31,7 @@
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { loadDotEnv } from './lib/loadDotEnv';
 import {
   flatTokensFromExport,
   formatTokensModule,
@@ -84,29 +85,6 @@ type StyleMeta = {
 // ---------------------------------------------------------------------------
 // CLI / env
 // ---------------------------------------------------------------------------
-
-function loadDotEnv(): void {
-  try {
-    const raw = readFileSync(join(ROOT, '.env'), 'utf8');
-    for (const line of raw.split('\n')) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const eq = trimmed.indexOf('=');
-      if (eq < 0) continue;
-      const key = trimmed.slice(0, eq).trim();
-      let val = trimmed.slice(eq + 1).trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (process.env[key] === undefined) process.env[key] = val;
-    }
-  } catch {
-    // .env optional
-  }
-}
 
 function parseArgs(argv: string[]) {
   const out = {
@@ -458,7 +436,7 @@ function tokensFromPluginJson(raw: unknown): FlatToken[] {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
-  loadDotEnv();
+  loadDotEnv(ROOT);
   const args = parseArgs(process.argv.slice(2));
   mkdirSync(args.outDir, { recursive: true });
 

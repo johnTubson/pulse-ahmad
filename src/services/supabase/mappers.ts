@@ -1,12 +1,12 @@
 import type { Database } from '@/types/database';
-import type {
-  CategoryId,
-  Expense,
-  MonthlyBudget,
-  Mood,
-  MoodValue,
-  Profile,
-  SpendingCategory,
+import {
+  isCategoryId,
+  type Expense,
+  type MonthlyBudget,
+  type Mood,
+  type MoodValue,
+  type Profile,
+  type SpendingCategory,
 } from '@/types/finance';
 
 type Tables = Database['public']['Tables'];
@@ -17,15 +17,30 @@ type CategoryRow = Tables['categories']['Row'];
 type BudgetRow = Tables['budgets']['Row'];
 type ProfileRow = Tables['profiles']['Row'];
 
-export function toExpense(row: ExpenseRow): Expense {
+/** Expense row with embedded `categories.slug` from a Supabase select join. */
+export type ExpenseRowWithCategory = ExpenseRow & {
+  categories: { slug: string } | null;
+};
+
+function slugFromJoin(categories: ExpenseRowWithCategory['categories']): string | null {
+  return categories?.slug ?? null;
+}
+
+/** Maps a DB expense to domain; `categoryId` is the category slug (not the ULID). */
+export function toExpense(row: ExpenseRow, categorySlug?: string | null): Expense {
+  const raw = categorySlug ?? 'other';
   return {
     id: row.id,
     amount: Number(row.amount),
-    categoryId: row.category_id as string as CategoryId,
+    categoryId: isCategoryId(raw) ? raw : 'other',
     note: row.note ?? undefined,
     date: row.expense_date,
     imageUrl: row.image_url ?? undefined,
   };
+}
+
+export function toExpenseFromJoin(row: ExpenseRowWithCategory): Expense {
+  return toExpense(row, slugFromJoin(row.categories));
 }
 
 export function toMood(row: MoodRow): Mood {
@@ -40,8 +55,9 @@ export function toMood(row: MoodRow): Mood {
 export function toSpendingCategory(row: CategoryRow): SpendingCategory {
   return {
     id: row.id,
+    slug: row.slug,
     name: row.name,
-    icon: row.icon as CategoryId,
+    icon: row.icon,
     colour: row.colour,
     sortOrder: row.sort_order,
     isActive: row.is_active,

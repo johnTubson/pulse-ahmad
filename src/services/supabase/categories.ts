@@ -3,15 +3,17 @@ import { getSupabaseClient } from './client';
 import { toSpendingCategory } from './mappers';
 
 export type CreateCategoryInput = {
+  slug: CategoryId | string;
   name: string;
-  icon?: CategoryId | string;
+  icon?: string;
   colour?: string;
   sortOrder?: number;
 };
 
 export type UpdateCategoryInput = {
+  slug?: CategoryId | string;
   name?: string;
-  icon?: CategoryId | string;
+  icon?: string;
   colour?: string;
   sortOrder?: number;
   isActive?: boolean;
@@ -44,8 +46,9 @@ export async function createCategory(
     .from('categories')
     .insert({
       user_id: userId,
+      slug: input.slug,
       name: input.name,
-      icon: input.icon,
+      icon: input.icon ?? input.slug,
       colour: input.colour,
       sort_order: input.sortOrder,
     })
@@ -63,6 +66,7 @@ export async function updateCategory(
   const { data, error } = await getSupabaseClient()
     .from('categories')
     .update({
+      slug: input.slug,
       name: input.name,
       icon: input.icon,
       colour: input.colour,
@@ -75,9 +79,4 @@ export async function updateCategory(
 
   if (error) throw error;
   return toSpendingCategory(data);
-}
-
-/** Soft-delete: categories are referenced by expenses, so deactivate instead. */
-export async function deactivateCategory(id: string): Promise<SpendingCategory> {
-  return updateCategory(id, { isActive: false });
 }

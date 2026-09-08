@@ -25,16 +25,12 @@ import {
 } from '@/lib/analytics/period';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
-import type { CategoryId, MoodValue } from '@/types/finance';
+import { isCategoryId, type CategoryId, type MoodValue } from '@/types/finance';
 
 /** Keep gifted-charts off this screen's sync require path. */
 const BarChartCard = lazy(() =>
   import('@/components/charts/BarChartCard').then((mod) => ({ default: mod.BarChartCard })),
 );
-
-function isCategoryId(value: string): value is CategoryId {
-  return value in categoryLabels;
-}
 
 function averageMood(values: MoodValue[]): number | null {
   if (values.length === 0) return null;

@@ -11,6 +11,8 @@ import { DateTimeRow } from '@/features/log/components/DateTimeRow';
 import { NoteField } from '@/features/log/components/NoteField';
 import { formatAmountValue } from '@/features/log/logFormReducer';
 import { formatMoney } from '@/lib/currency/formatMoney';
+import { useAuthStore } from '@/stores/authStore';
+import { useCategoryStore } from '@/stores/categoryStore';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useUiStore } from '@/stores/uiStore';
 import type { CategoryId, Expense } from '@/types/finance';
@@ -58,18 +60,20 @@ type EditExpenseFormProps = {
 };
 
 export function EditExpenseForm({ expense }: EditExpenseFormProps) {
+  const userId = useAuthStore((s) => s.userId);
   const update = useExpenseStore((s) => s.update);
   const remove = useExpenseStore((s) => s.remove);
   const showToast = useUiStore((s) => s.showToast);
   const [state, dispatch] = useReducer(editReducer, expense, createInitialState);
 
+  const categoryLoaded = useCategoryStore((s) => s.hasSlug(state.categoryId));
   const parsed = parseFloat(state.amount);
-  const canSave = parsed > 0;
+  const canSave = Boolean(userId) && parsed > 0 && categoryLoaded;
 
   const save = () => {
-    if (!canSave) return;
+    if (!userId || !canSave) return;
     hapticSuccess();
-    update(expense.id, {
+    update(userId, expense.id, {
       amount: parsed,
       categoryId: state.categoryId,
       note: state.note.trim() || undefined,

@@ -6,7 +6,7 @@
  *   - Late-night spikes: a share of expenses land after 9pm.
  *   - Social weekends: weekends lean toward eating-out and entertainment.
  */
-import type { CategoryId, Expense, Mood, MoodValue } from '@/types/finance';
+import type { CategoryId, Expense, Mood, MoodValue, SpendingCategory } from '@/types/finance';
 
 export type SeedCategory = {
   id: CategoryId;
@@ -16,6 +16,19 @@ export type SeedCategory = {
   sortOrder: number;
 };
 
+/** Mock / seed rows use slug as both `id` and `slug`. */
+export function toSpendingCategories(seed: SeedCategory[]): SpendingCategory[] {
+  return seed.map((c) => ({
+    id: c.id,
+    slug: c.id,
+    name: c.name,
+    icon: c.icon,
+    colour: c.colour,
+    sortOrder: c.sortOrder,
+    isActive: true,
+  }));
+}
+
 export type SeedData = {
   categories: SeedCategory[];
   expenses: Expense[];
@@ -23,18 +36,30 @@ export type SeedData = {
 };
 
 export const DEFAULT_CATEGORIES: SeedCategory[] = [
-  { id: 'groceries', name: 'Food & Groceries', icon: '🛒', colour: '#0d9488', sortOrder: 0 },
-  { id: 'eating-out', name: 'Eating Out', icon: '🍽️', colour: '#f97316', sortOrder: 1 },
-  { id: 'delivery', name: 'Delivery', icon: '🛵', colour: '#ec4899', sortOrder: 2 },
-  { id: 'transport', name: 'Transport', icon: '🚗', colour: '#3b82f6', sortOrder: 3 },
-  { id: 'shopping', name: 'Shopping', icon: '🛍️', colour: '#8b5cf6', sortOrder: 4 },
-  { id: 'entertainment', name: 'Entertainment', icon: '🎬', colour: '#f59e0b', sortOrder: 5 },
-  { id: 'bills', name: 'Bills & Utilities', icon: '💡', colour: '#6366f1', sortOrder: 6 },
-  { id: 'health', name: 'Health', icon: '💊', colour: '#10b981', sortOrder: 7 },
-  { id: 'education', name: 'Education', icon: '📚', colour: '#14b8a6', sortOrder: 8 },
-  { id: 'gifts', name: 'Gifts & Donations', icon: '🎁', colour: '#e879f9', sortOrder: 9 },
-  { id: 'savings', name: 'Savings & Investment', icon: '🏦', colour: '#64748b', sortOrder: 10 },
-  { id: 'other', name: 'Other', icon: '➕', colour: '#94a3b8', sortOrder: 11 },
+  { id: 'groceries', name: 'Food & Groceries', icon: 'groceries', colour: '#0d9488', sortOrder: 1 },
+  { id: 'eating-out', name: 'Eating Out', icon: 'eating-out', colour: '#f97316', sortOrder: 2 },
+  { id: 'delivery', name: 'Delivery', icon: 'delivery', colour: '#ec4899', sortOrder: 3 },
+  { id: 'transport', name: 'Transport', icon: 'transport', colour: '#3b82f6', sortOrder: 4 },
+  { id: 'shopping', name: 'Shopping', icon: 'shopping', colour: '#8b5cf6', sortOrder: 5 },
+  {
+    id: 'entertainment',
+    name: 'Entertainment',
+    icon: 'entertainment',
+    colour: '#f59e0b',
+    sortOrder: 6,
+  },
+  { id: 'bills', name: 'Bills & Utilities', icon: 'bills', colour: '#6366f1', sortOrder: 7 },
+  { id: 'health', name: 'Health', icon: 'health', colour: '#10b981', sortOrder: 8 },
+  { id: 'education', name: 'Education', icon: 'education', colour: '#14b8a6', sortOrder: 9 },
+  { id: 'gifts', name: 'Gifts & Donations', icon: 'gifts', colour: '#e879f9', sortOrder: 10 },
+  {
+    id: 'savings',
+    name: 'Savings & Investment',
+    icon: 'savings',
+    colour: '#64748b',
+    sortOrder: 11,
+  },
+  { id: 'other', name: 'Other', icon: 'other', colour: '#94a3b8', sortOrder: 12 },
 ];
 
 /** Deterministic PRNG (mulberry32) so generated data is reproducible. */

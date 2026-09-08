@@ -2,6 +2,7 @@ import { syncDataForAuthChange, type SyncDataDeps } from '@/lib/sync/authSync';
 import { listBudgets } from '@/services/supabase/budgets';
 import { getProfile } from '@/services/supabase/profile';
 import { useAuthStore } from '@/stores/authStore';
+import { useCategoryStore } from '@/stores/categoryStore';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
 import { useUiStore } from '@/stores/uiStore';
@@ -19,6 +20,7 @@ async function hydrateProfileAndBudget(userId: string): Promise<void> {
     const ui = useUiStore.getState();
     if (profile.displayName) ui.setDisplayName(profile.displayName);
     if (profile.currency) ui.setCurrency(profile.currency);
+    ui.completeOnboarding();
   }
   // Rejected: profile may not exist yet for brand-new accounts.
 
@@ -33,17 +35,19 @@ async function hydrateProfileAndBudget(userId: string): Promise<void> {
 
 const deps: SyncDataDeps = {
   onSignedIn: (userId) => {
+    void useCategoryStore.getState().load(userId);
     void useExpenseStore.getState().load(userId);
     void useMoodStore.getState().load(userId);
     void hydrateProfileAndBudget(userId);
   },
   onSignedOut: () => {
+    useCategoryStore.getState().reset();
     useExpenseStore.getState().reset();
     useMoodStore.getState().reset();
   },
 };
 
-/** Sync expenses and moods when auth state changes. Runs outside React. */
+/** Sync expenses, moods, and categories when auth state changes. Runs outside React. */
 export function attachSyncOnAuth(): void {
   if (attached) return;
   attached = true;

@@ -1,5 +1,6 @@
 import {
   toExpense,
+  toExpenseFromJoin,
   toMonthlyBudget,
   toMood,
   toProfile,
@@ -7,19 +8,22 @@ import {
 } from '@/services/supabase/mappers';
 
 describe('supabase mappers', () => {
-  it('maps an expense row to the domain shape', () => {
+  it('maps an expense row using an explicit category slug', () => {
     expect(
-      toExpense({
-        id: 'e1',
-        user_id: 'u1',
-        category_id: 'groceries',
-        amount: 42.5,
-        note: 'lunch',
-        expense_date: '2026-07-08T10:00:00Z',
-        image_url: null,
-        created_at: '2026-07-08T10:00:00Z',
-        updated_at: '2026-07-08T10:00:00Z',
-      }),
+      toExpense(
+        {
+          id: 'e1',
+          user_id: 'u1',
+          category_id: '01CATEGORYULID000000000001',
+          amount: 42.5,
+          note: 'lunch',
+          expense_date: '2026-07-08T10:00:00Z',
+          image_url: null,
+          created_at: '2026-07-08T10:00:00Z',
+          updated_at: '2026-07-08T10:00:00Z',
+        },
+        'groceries',
+      ),
     ).toEqual({
       id: 'e1',
       amount: 42.5,
@@ -30,20 +34,28 @@ describe('supabase mappers', () => {
     });
   });
 
-  it('coerces string numeric amounts to numbers', () => {
-    const expense = toExpense({
+  it('maps a joined expense row via categories.slug', () => {
+    expect(
+      toExpenseFromJoin({
+        id: 'e2',
+        user_id: 'u1',
+        category_id: '01CATEGORYULID000000000002',
+        amount: '19.99' as unknown as number,
+        note: null,
+        expense_date: '2026-07-08T10:00:00Z',
+        image_url: 'u1/receipt.jpg',
+        created_at: '2026-07-08T10:00:00Z',
+        updated_at: '2026-07-08T10:00:00Z',
+        categories: { slug: 'transport' },
+      }),
+    ).toEqual({
       id: 'e2',
-      user_id: 'u1',
-      category_id: 'transport',
-      amount: '19.99' as unknown as number,
-      note: null,
-      expense_date: '2026-07-08T10:00:00Z',
-      image_url: 'u1/receipt.jpg',
-      created_at: '2026-07-08T10:00:00Z',
-      updated_at: '2026-07-08T10:00:00Z',
+      amount: 19.99,
+      categoryId: 'transport',
+      note: undefined,
+      date: '2026-07-08T10:00:00Z',
+      imageUrl: 'u1/receipt.jpg',
     });
-    expect(expense.amount).toBe(19.99);
-    expect(expense.imageUrl).toBe('u1/receipt.jpg');
   });
 
   it('maps a mood row and preserves a null expense link', () => {
@@ -63,6 +75,7 @@ describe('supabase mappers', () => {
       toSpendingCategory({
         id: 'c1',
         user_id: 'u1',
+        slug: 'eating-out',
         name: 'Eating Out',
         icon: 'eating-out',
         colour: '#f97316',
@@ -72,6 +85,7 @@ describe('supabase mappers', () => {
       }),
     ).toEqual({
       id: 'c1',
+      slug: 'eating-out',
       name: 'Eating Out',
       icon: 'eating-out',
       colour: '#f97316',

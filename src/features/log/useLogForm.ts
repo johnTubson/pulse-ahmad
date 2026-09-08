@@ -9,6 +9,7 @@ import { formatMoney } from '@/lib/currency/formatMoney';
 import { ulid } from '@/lib/id';
 import { uploadReceipt } from '@/services/supabase/storage';
 import { useAuthStore } from '@/stores/authStore';
+import { useCategoryStore } from '@/stores/categoryStore';
 import { useExpenseStore } from '@/stores/expenseStore';
 import { useMoodStore } from '@/stores/moodStore';
 import { useScanDraftStore } from '@/stores/scanDraftStore';
@@ -68,8 +69,11 @@ export function useLogForm() {
     });
   }
 
+  const categoryLoaded = useCategoryStore(
+    (s) => state.categoryId != null && s.hasSlug(state.categoryId),
+  );
   const parsed = parseFloat(state.amount);
-  const canSave = Boolean(userId) && parsed > 0 && state.categoryId != null && !state.saving;
+  const canSave = Boolean(userId) && parsed > 0 && categoryLoaded && !state.saving;
   // Only a successful OCR with an attached receipt locks the Scan control.
   // Failures keep Scan available so the user can retry without removing first.
   const scanned = ocrStatus === 'success' && Boolean(receiptUri);

@@ -27,6 +27,10 @@ export const CATEGORY_IDS: CategoryId[] = [
   'other',
 ];
 
+export function isCategoryId(value: string): value is CategoryId {
+  return (CATEGORY_IDS as readonly string[]).includes(value);
+}
+
 /** Categories tied to going out / social activity (used by personality classifier). */
 export const SOCIAL_CATEGORIES: CategoryId[] = ['eating-out', 'delivery', 'entertainment'];
 
@@ -57,13 +61,14 @@ export type PersonalityType =
   'stress-spender' | 'reward-buyer' | 'routine-spender' | 'impulse-owl' | 'social-spender';
 
 /**
- * A user-configurable spending category. `icon` is a `CategoryId`
- * slug so charts and chips can resolve colours/labels from `theme.ts`.
+ * User category row. Domain expenses use `slug` as `Expense.categoryId`
+ * when the slug is a built-in `CategoryId`.
  */
 export type SpendingCategory = {
   id: string;
+  slug: string;
   name: string;
-  icon: CategoryId;
+  icon: string;
   colour: string;
   sortOrder: number;
   isActive: boolean;

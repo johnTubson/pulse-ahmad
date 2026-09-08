@@ -29,6 +29,7 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
+          slug: string;
           name: string;
           icon: string;
           colour: string;
@@ -39,6 +40,7 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
+          slug: string;
           name: string;
           icon?: string;
           colour?: string;
@@ -47,6 +49,7 @@ export type Database = {
           created_at?: string;
         };
         Update: {
+          slug?: string;
           name?: string;
           icon?: string;
           colour?: string;

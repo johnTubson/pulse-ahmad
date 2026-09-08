@@ -28,17 +28,18 @@ npm install
 cp .env.example .env
 ```
 
-| Variable                                 | Description                                                        |
-| ---------------------------------------- | ------------------------------------------------------------------ |
-| `EXPO_PUBLIC_SUPABASE_URL`               | Supabase project URL                                               |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY`          | Supabase anon (public) key                                         |
-| `EXPO_PUBLIC_OCR_PROVIDER`               | `llm` (default), `google`, `ocrspace`, or `interfaze`              |
-| `EXPO_PUBLIC_OPENROUTER_API_KEY`         | OpenRouter API key (default LLM OCR)                               |
-| `EXPO_PUBLIC_OPENROUTER_MODEL`           | Optional; defaults to `qwen/qwen3.7-flash`                         |
-| `EXPO_PUBLIC_OPENROUTER_FALLBACK_MODELS` | Optional comma-separated vision models after primary on rate limit |
-| `EXPO_PUBLIC_OCR_API_KEY`                | Google Cloud Vision API key (when provider is google)              |
-| `EXPO_PUBLIC_EAS_PROJECT_ID`             | From `eas init` / expo.dev (optional until building)               |
-| `EXPO_PUBLIC_USE_MOCK_DATA`              | `true` = skip Supabase, seed ~60 days of demo data                 |
+| Variable                                 | Description                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------- |
+| `EXPO_PUBLIC_SUPABASE_URL`               | Supabase project URL                                                   |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY`          | Supabase anon (public) key                                             |
+| `EXPO_PUBLIC_OCR_PROVIDER`               | `llm` (default), `google`, `ocrspace`, or `interfaze`                  |
+| `EXPO_PUBLIC_OPENROUTER_API_KEY`         | OpenRouter API key (default LLM OCR)                                   |
+| `EXPO_PUBLIC_OPENROUTER_MODEL`           | Optional; defaults to `qwen/qwen3.7-flash`                             |
+| `EXPO_PUBLIC_OPENROUTER_FALLBACK_MODELS` | Optional comma-separated vision models after primary on rate limit     |
+| `EXPO_PUBLIC_OCR_API_KEY`                | Google Cloud Vision API key (when provider is google)                  |
+| `EXPO_PUBLIC_EAS_PROJECT_ID`             | From `eas init` / expo.dev (optional until building)                   |
+| `EXPO_PUBLIC_USE_MOCK_DATA`              | `true` = skip Supabase, seed ~60 days of demo data                     |
+| `SUPABASE_SERVICE_ROLE_KEY`              | Local only: `npm run seed:supabase` (never commit / never EXPO_PUBLIC) |
 
 ### OpenRouter LLM (receipt OCR, default)
 
@@ -59,6 +60,29 @@ The app signs in as `demo@pulse.app` and hydrates expenses + moods from `src/lib
 
 Dump seed JSON to disk: `npm run seed > scripts/seed-data.json`.
 
+### Reviewer demo account (live Supabase)
+
+For examiners testing against a real backend (`EXPO_PUBLIC_USE_MOCK_DATA=false`):
+
+|          |                      |
+| -------- | -------------------- |
+| Email    | `reviewer@pulse.app` |
+| Password | `PulseReview2026!`   |
+
+Dataset (re-seed anytime): ~60 days of patterned expenses + moods (stress/delivery correlation, weekend social spend, late-night spikes), monthly budget near ~78% used, personality unlocked (14+ days). Signing in hydrates the server profile and skips the how-it-works gate.
+
+Prerequisites:
+
+1. Apply migrations `001`–`005` (see [`supabase/README.md`](./supabase/README.md)).
+2. Put `SUPABASE_SERVICE_ROLE_KEY` in `.env` (Dashboard → Settings → API → `service_role`).
+3. Run:
+
+```bash
+npm run seed:supabase
+```
+
+Receipt OCR: scan a new receipt in-app (seed has no images).
+
 ### 3. Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
@@ -66,6 +90,9 @@ Dump seed JSON to disk: `npm run seed > scripts/seed-data.json`.
 3. Run migrations in order — see [`supabase/README.md`](./supabase/README.md):
    - `supabase/migrations/001_receipts_storage_bucket.sql`
    - `supabase/migrations/002_initial_schema.sql`
+   - `supabase/migrations/003_category_slug_ids.sql`
+   - `supabase/migrations/004_fix_category_seed_trigger.sql`
+   - `supabase/migrations/005_fix_signup_trigger.sql`
 
 ### 4. Run the app
 
@@ -87,6 +114,7 @@ Native modules (camera, sensors, notifications) need a **dev client** or `expo r
 | `npm run validate`      | Typecheck + lint + test (run before every PR) |
 | `npm run test:coverage` | Jest with coverage report for `src/lib/**`    |
 | `npm run seed`          | Print patterned seed JSON to stdout           |
+| `npm run seed:supabase` | Create/refresh live reviewer account + data   |
 | `npm run format`        | Prettier format                               |
 | `npm run lint`          | ESLint                                        |
 

@@ -14,7 +14,7 @@ import {
   type QueuedMutation,
 } from '@/lib/sync/queue';
 import { deleteBudget, upsertBudget } from '@/services/supabase/budgets';
-import { createCategory, deactivateCategory, updateCategory } from '@/services/supabase/categories';
+import { createCategory, updateCategory } from '@/services/supabase/categories';
 import { createExpense, deleteExpense, updateExpense } from '@/services/supabase/expenses';
 import { createMood, deleteMood } from '@/services/supabase/moods';
 import { updateProfile } from '@/services/supabase/profile';
@@ -36,7 +36,8 @@ async function processMutation(m: QueuedMutation): Promise<void> {
   switch (m.entity) {
     case 'expense':
       if (m.operation === 'create') await createExpense(payload.userId, payload.input);
-      else if (m.operation === 'update') await updateExpense(m.targetId, payload.input);
+      else if (m.operation === 'update')
+        await updateExpense(payload.userId, m.targetId, payload.input);
       else await deleteExpense(m.targetId);
       return;
     case 'mood':
@@ -46,7 +47,7 @@ async function processMutation(m: QueuedMutation): Promise<void> {
     case 'category':
       if (m.operation === 'create') await createCategory(payload.userId, payload.input);
       else if (m.operation === 'update') await updateCategory(m.targetId, payload.input);
-      else await deactivateCategory(m.targetId);
+      else await updateCategory(m.targetId, { isActive: false });
       return;
     case 'budget':
       if (m.operation === 'delete') await deleteBudget(m.targetId);
