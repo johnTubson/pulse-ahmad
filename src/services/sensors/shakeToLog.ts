@@ -8,7 +8,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUiStore } from '@/stores/uiStore';
 import { hapticMedium } from '@/utils/haptics';
 
-const UPDATE_INTERVAL_MS = 100;
+/** 50ms catches brief shake peaks that 100ms often misses on device. */
+const UPDATE_INTERVAL_MS = 50;
 
 let attached = false;
 let subscription: { remove: () => void } | null = null;
@@ -57,8 +58,6 @@ function openLogFromShake(): void {
 
 function onReading(data: AccelerometerMeasurement): void {
   const now = Date.now();
-  if (detector.isCoolingDown(now)) return;
-
   const magnitudeSq = data.x * data.x + data.y * data.y + data.z * data.z;
   if (detector.push(magnitudeSq, now, shakeSensitivity)) {
     openLogFromShake();
@@ -119,6 +118,7 @@ export function attachShakeToLog(): void {
   unsubUi = useUiStore.subscribe((state, prev) => {
     if (state.shakeSensitivity !== prev.shakeSensitivity) {
       shakeSensitivity = state.shakeSensitivity;
+      detector.reset();
     }
     if (
       state.shakeToLogEnabled === prev.shakeToLogEnabled &&

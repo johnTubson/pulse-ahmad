@@ -78,15 +78,12 @@ export function AccountSettings() {
           <View className="ml-4 h-px bg-border" />
           <View className="px-4 py-4">
             <Text className="mb-2 text-base font-medium text-text">Sensitivity</Text>
-            <Text className="mb-3 text-sm text-text-muted">
-              Higher = harder to trigger · {shakeSensitivity.toFixed(1)}
-            </Text>
             <View className="mb-3 flex-row flex-wrap gap-2">
-              {SHAKE_SENSITIVITY_OPTIONS.map((value) => {
-                const selected = shakeSensitivity === value;
+              {SHAKE_SENSITIVITY_OPTIONS.map((option) => {
+                const selected = shakeSensitivity === option.value;
                 return (
                   <Pressable
-                    key={value}
+                    key={option.value}
                     accessibilityRole="button"
                     accessibilityState={{ selected }}
                     className={cn(
@@ -94,7 +91,7 @@ export function AccountSettings() {
                       selected ? 'border-primary bg-primary-50' : 'border-border bg-surface',
                     )}
                     style={({ pressed }) => (pressed ? { opacity: 0.8 } : undefined)}
-                    onPress={() => setShakeSensitivity(value)}
+                    onPress={() => setShakeSensitivity(option.value)}
                   >
                     <Text
                       className={cn(
@@ -102,7 +99,7 @@ export function AccountSettings() {
                         selected ? 'text-primary' : 'text-text-muted',
                       )}
                     >
-                      {value.toFixed(1)}
+                      {option.label}
                     </Text>
                   </Pressable>
                 );

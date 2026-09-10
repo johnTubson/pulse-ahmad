@@ -13,15 +13,20 @@ export type ShakeDetector = {
   reset: () => void;
 };
 
-/** Resting magnitude is ~1g. Peaks above (1 + sensitivity) count toward a shake. */
+/**
+ * Resting magnitude is ~1g. Peaks above (1 + sensitivity) count toward a shake.
+ * Counts rising edges only (must fall below threshold between peaks) so a real
+ * back-and-forth shake registers and a single sustained bump does not.
+ */
 export function createShakeDetector(options: ShakeDetectorOptions = {}): ShakeDetector {
-  const cooldownMs = options.cooldownMs ?? 1800;
-  const windowMs = options.windowMs ?? 600;
-  const minPeakGapMs = options.minPeakGapMs ?? 120;
+  const cooldownMs = options.cooldownMs ?? 1000;
+  const windowMs = options.windowMs ?? 800;
+  const minPeakGapMs = options.minPeakGapMs ?? 60;
   const requiredPeaks = options.requiredPeaks ?? 2;
 
   let lastTriggerAt = 0;
   let lastPeakAt = 0;
+  let wasAbove = false;
   let peakTimes: number[] = [];
 
   return {
@@ -29,11 +34,18 @@ export function createShakeDetector(options: ShakeDetectorOptions = {}): ShakeDe
       return lastTriggerAt > 0 && now - lastTriggerAt < cooldownMs;
     },
     push(magnitudeSq: number, now: number, sensitivity: number): boolean {
-      if (lastTriggerAt > 0 && now - lastTriggerAt < cooldownMs) return false;
-
       const threshold = 1 + sensitivity;
-      if (magnitudeSq < threshold * threshold) return false;
+      const above = magnitudeSq >= threshold * threshold;
 
+      if (!above) {
+        wasAbove = false;
+        return false;
+      }
+
+      if (wasAbove) return false;
+      wasAbove = true;
+
+      if (lastTriggerAt > 0 && now - lastTriggerAt < cooldownMs) return false;
       if (lastPeakAt > 0 && now - lastPeakAt < minPeakGapMs) return false;
 
       lastPeakAt = now;
@@ -50,6 +62,7 @@ export function createShakeDetector(options: ShakeDetectorOptions = {}): ShakeDe
     reset() {
       lastTriggerAt = 0;
       lastPeakAt = 0;
+      wasAbove = false;
       peakTimes = [];
     },
   };
