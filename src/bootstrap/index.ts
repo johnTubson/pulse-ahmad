@@ -1,4 +1,5 @@
 import { env } from '@/constants/env';
+import { attachShakeToLog } from '@/services/sensors/shakeToLog';
 import { useAuthStore } from '@/stores/authStore';
 import { startOfflineQueueListener } from '@/stores/offlineQueue';
 
@@ -20,6 +21,7 @@ export function bootstrapApp(): void {
   if (bootstrapped) return;
   bootstrapped = true;
 
+  attachShakeToLog();
   attachNotifications();
   attachBudgetAlerts();
 

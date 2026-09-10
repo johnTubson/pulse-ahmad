@@ -1,4 +1,3 @@
-import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +6,7 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { MOOD_META, MOOD_VALUES } from '@/constants/mood';
 import type { MoodValue } from '@/types/finance';
 import { cn } from '@/utils/cn';
+import { hapticLight } from '@/utils/haptics';
 
 type MoodSheetProps = {
   visible: boolean;
@@ -30,7 +30,7 @@ export function MoodSheet({ visible, onSelect, onSkip }: MoodSheetProps) {
     if (pending) return;
     setSelected(value);
     setPending(true);
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    hapticLight();
     setTimeout(() => {
       resetLocal();
       onSelect(value);

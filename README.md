@@ -10,7 +10,7 @@ Built with Expo SDK 57 for CM3050 Mobile Development (Coursework 2).
 - **NativeWind v4** — design tokens in `tokens.js` / `tailwind.config.js` (Manrope)
 - **Zustand** + AsyncStorage (local prefs) with Supabase sync + offline queue
 - **Supabase** — Auth, Postgres, Storage
-- **Google Cloud Vision / OCR.space / Interfaze** — receipt OCR
+- **OpenRouter** (default LLM OCR); Google Cloud Vision / OCR.space / Interfaze as alternate providers
 - **Jest** + React Native Testing Library
 - **EAS** — `development` / `preview` / `production` builds
 
@@ -103,21 +103,32 @@ npx expo start --clear
 
 Press `i` for iOS simulator, `a` for Android emulator, or scan the QR code with Expo Go.
 
-Native modules (camera, sensors, notifications) need a **dev client** or `expo run:android` / `expo run:ios`, not plain Expo Go alone for all features.
+**Full native features** (camera, shake-to-log / sensors, notifications, secure store) need an EAS **development** build (`expo-dev-client`) or `expo run:android` / `expo run:ios`. Plain Expo Go alone does not cover every native module this app uses.
+
+### Snack vs EAS / dev client
+
+| Path                                | What it is for                                                                                                                                                                           |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EAS `development` / `expo run:*`    | Supported way to exercise the real app, including native modules                                                                                                                         |
+| Expo Go                             | Quick UI iteration; some native features are limited or unavailable                                                                                                                      |
+| Expo Snack (`npm run snack:create`) | Optional filtered pack via the root `App.tsx` Snack shim; not a substitute for EAS/dev-client. Camera, sensors, notifications, and secure store will not behave like a development build |
+
+Use Snack only for lightweight demos. Use EAS or a local native run for coursework demos that need shake, camera OCR, or notifications.
 
 ## Scripts
 
-| Command                 | Description                                   |
-| ----------------------- | --------------------------------------------- |
-| `npm start`             | Start Metro dev server                        |
-| `npm run ios`           | Open iOS simulator                            |
-| `npm run android`       | Open Android emulator                         |
-| `npm run validate`      | Typecheck + lint + test (run before every PR) |
-| `npm run test:coverage` | Jest with coverage report for `src/lib/**`    |
-| `npm run seed`          | Print patterned seed JSON to stdout           |
-| `npm run seed:supabase` | Create/refresh live reviewer account + data   |
-| `npm run format`        | Prettier format                               |
-| `npm run lint`          | ESLint                                        |
+| Command                 | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
+| `npm start`             | Start Metro dev server                                 |
+| `npm run ios`           | Open iOS simulator                                     |
+| `npm run android`       | Open Android emulator                                  |
+| `npm run validate`      | Typecheck + lint + test (run before every PR)          |
+| `npm run test:coverage` | Jest with coverage report for `src/lib/**`             |
+| `npm run seed`          | Print patterned seed JSON to stdout                    |
+| `npm run seed:supabase` | Create/refresh live reviewer account + data            |
+| `npm run snack:create`  | Pack a filtered Expo Snack (limited; see Snack vs EAS) |
+| `npm run format`        | Prettier format                                        |
+| `npm run lint`          | ESLint                                                 |
 
 ## Project structure
 
@@ -149,7 +160,8 @@ pulse/
 - Home budget progress when a monthly limit is set
 - Analytics (period filters, category drill-down, charts)
 - Personality insights from local classification
-- Settings: currency, category visibility, notifications, CSV export, privacy
+- Settings: display currency preference (no FX conversion API), category visibility (not part of onboarding), notifications, CSV export, account
+- Account delete: clears local data on this device and signs out; server-side account deletion is not available from the app yet
 
 ## EAS builds
 

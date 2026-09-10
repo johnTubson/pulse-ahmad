@@ -3,10 +3,17 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { setCurrencyPreference } from '@/lib/currency/currencyPreference';
+import {
+  DEFAULT_SHAKE_SENSITIVITY,
+  DEFAULT_SHAKE_TO_LOG_ENABLED,
+} from '@/services/sensors/shakeSensitivity';
 import type { CategoryId } from '@/types/finance';
 
 type UiState = {
   hasCompletedOnboarding: boolean;
+  /** Accelerometer threshold for shake-to-log; higher = harder to trigger. */
+  shakeSensitivity: number;
+  shakeToLogEnabled: boolean;
   /** ISO 4217 currency code for `formatMoney()`. */
   currency: string;
   /** Optional display name; falls back to email local-part in UI. */
@@ -21,6 +28,8 @@ type UiState = {
   /** Transient quick-log overlay. */
   quickLogOpen: boolean;
   completeOnboarding: () => void;
+  setShakeSensitivity: (value: number) => void;
+  setShakeToLogEnabled: (enabled: boolean) => void;
   setCurrency: (currency: string) => void;
   setDisplayName: (name: string | null) => void;
   setDailyReminderEnabled: (enabled: boolean) => void;
@@ -37,6 +46,8 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       hasCompletedOnboarding: false,
+      shakeSensitivity: DEFAULT_SHAKE_SENSITIVITY,
+      shakeToLogEnabled: DEFAULT_SHAKE_TO_LOG_ENABLED,
       currency: 'USD',
       displayName: null,
       dailyReminderEnabled: false,
@@ -46,6 +57,8 @@ export const useUiStore = create<UiState>()(
       toast: null,
       quickLogOpen: false,
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
+      setShakeSensitivity: (value) => set({ shakeSensitivity: value }),
+      setShakeToLogEnabled: (enabled) => set({ shakeToLogEnabled: enabled }),
       setCurrency: (currency) => {
         setCurrencyPreference(currency);
         set({ currency });
@@ -70,6 +83,8 @@ export const useUiStore = create<UiState>()(
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         hasCompletedOnboarding: state.hasCompletedOnboarding,
+        shakeSensitivity: state.shakeSensitivity,
+        shakeToLogEnabled: state.shakeToLogEnabled,
         currency: state.currency,
         displayName: state.displayName,
         dailyReminderEnabled: state.dailyReminderEnabled,
